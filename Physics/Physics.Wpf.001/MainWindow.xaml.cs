@@ -40,6 +40,8 @@ namespace Physics.Wpf._001
         private void glControl_Load(object sender, EventArgs e)
         {
             glControl.MakeCurrent();
+            GL.Disable(EnableCap.Lighting);
+            GL.Disable(EnableCap.Texture2D);
             GL.ClearColor(0.5f, 0.5f, 1.0f, 1f);
 
             plane = new Physics.Plane(new Vector3(0, 0, 0), new Vector3(0, 1, 0));

@@ -28,7 +28,22 @@ namespace Physics
 
         public void Draw() 
         {
-            ;
+            GL.PointSize(5.0f);
+            GL.Begin(PrimitiveType.Points);
+            {
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex3(m_v3Position);
+            }
+            GL.End();
+            GL.PointSize(1.0f);
+
+            GL.Begin(PrimitiveType.Lines);
+            {
+                GL.Color3(0.0f, 1.0f, 0.0f);
+                GL.Vertex3(m_v3Position);
+                GL.Vertex3(m_v3Position + m_v3Normal);
+            }
+            GL.End();           
         }
     }
 }
