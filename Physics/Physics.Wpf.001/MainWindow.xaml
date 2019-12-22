@@ -10,7 +10,7 @@
         >
     <Grid>
         <WindowsFormsHost Background="Black">
-            <opentk:GLControl x:Name="glControl" Load="glControl_Load" />
+            <opentk:GLControl x:Name="glControl" Load="glControl_Load" Resize="glControl_Resize" />
         </WindowsFormsHost>
     </Grid>
 </Window>

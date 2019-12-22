@@ -42,24 +42,42 @@ namespace Physics.Wpf._001
             glControl.MakeCurrent();
             GL.Disable(EnableCap.Lighting);
             GL.Disable(EnableCap.Texture2D);
-            GL.ClearColor(0.5f, 0.5f, 1.0f, 1f);
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            GL.ClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 
             plane = new Physics.Plane(new Vector3(0, 0, 0), new Vector3(0, 1, 0));
             rigidBody = new RigidBody();
 
             rigidBody.m_v3Position = new Vector3(0, 10.0f, 0);
-            rigidBody.m_v3Force = new Vector3(0, -1.0f, 0);
+            rigidBody.m_v3Force = new Vector3(0, -9.81f, 0);
 
             rigidBody.m_listPoints.Add(new Vector3(-1, -1, -1));
             rigidBody.m_listPoints.Add(new Vector3(+1, -1, -1));
             rigidBody.m_listPoints.Add(new Vector3(-1, +1, -1));
             rigidBody.m_listPoints.Add(new Vector3(+1, +1, -1));
-            rigidBody.m_listPoints.Add(new Vector3(-1, +1, +1));
-            rigidBody.m_listPoints.Add(new Vector3(+1, +1, +1));
             rigidBody.m_listPoints.Add(new Vector3(-1, -1, +1));
             rigidBody.m_listPoints.Add(new Vector3(+1, -1, +1));
+            rigidBody.m_listPoints.Add(new Vector3(-1, +1, +1));
+            rigidBody.m_listPoints.Add(new Vector3(+1, +1, +1));
 
-
+            // back
+            rigidBody.m_listIndices.AddRange(new int[] { 0, 1, 2 });
+            rigidBody.m_listIndices.AddRange(new int[] { 0, 2, 3 });
+            // front
+            rigidBody.m_listIndices.AddRange(new int[] { 4, 5, 7 });
+            rigidBody.m_listIndices.AddRange(new int[] { 4, 6, 7 });
+            // left
+            rigidBody.m_listIndices.AddRange(new int[] { 0, 2, 6 });
+            rigidBody.m_listIndices.AddRange(new int[] { 0, 4, 6 });
+            // right
+            rigidBody.m_listIndices.AddRange(new int[] { 1, 3, 7 });
+            rigidBody.m_listIndices.AddRange(new int[] { 1, 5, 7 });
+            // bottom
+            rigidBody.m_listIndices.AddRange(new int[] { 0, 1, 5 });
+            rigidBody.m_listIndices.AddRange(new int[] { 0, 4, 5 });
+            // top
+            rigidBody.m_listIndices.AddRange(new int[] { 2, 3, 7 });
+            rigidBody.m_listIndices.AddRange(new int[] { 2, 6, 7 });
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Tick += Timer_Tick;
@@ -69,20 +87,15 @@ namespace Physics.Wpf._001
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            glControl.MakeCurrent();
-
             // update
             elapsedTime = currentTime;
             currentTime = DateTime.Now;
             float dt = (float)(currentTime - elapsedTime).TotalSeconds;
 
-            // draw
-            GL.Viewport(0, 0, glControl.Width, glControl.Height);
-
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             Matrix4 m_world = Matrix4.Identity;
-            Matrix4 m_view = Matrix4.LookAt(new Vector3(0, 10, 10), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            Matrix4 m_view = Matrix4.LookAt(new Vector3(0, 2, 10), new Vector3(0, 2, 0), new Vector3(0, 1, 0));
             Matrix4 m_modelview = Matrix4.Mult(m_world, m_view);
             Matrix4 m_proj = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 2.0f, (float)glControl.Width / (float)glControl.Height, 0.05f, 1000.0f);
 
@@ -96,7 +109,7 @@ namespace Physics.Wpf._001
             List<Hit> listHits = new List<Hit>();
             if (true == rigidBody.CollisionDetection(plane, listHits)) 
             {
-                rigidBody.CollisionResponse(listHits);
+                rigidBody.CollisionResponse(plane, listHits);
             }
 
             plane.Draw();
@@ -105,5 +118,12 @@ namespace Physics.Wpf._001
             glControl.SwapBuffers();
         }
 
+        private void glControl_Resize(object sender, EventArgs e)
+        {
+            int iWidth = ((GLControl)sender).Width;
+            int iHeight = ((GLControl)sender).Height;
+
+            GL.Viewport(0, 0, iWidth, iHeight);
+        }
     }
 }
