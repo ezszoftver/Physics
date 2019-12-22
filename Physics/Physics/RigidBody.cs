@@ -14,7 +14,9 @@ namespace Physics
         public List<Vector3> m_listPoints = new List<Vector3>();
         public List<int> m_listIndices = new List<int>();
 
+        public Vector3 m_fGravity = new Vector3();
         public float m_fMass = 1.0f;
+        public float m_fRestitution = 0.0f;
 
         public Vector3 m_v3Force = new Vector3();
         public Vector3 m_v3LinearAcceleration = new Vector3();
@@ -23,8 +25,8 @@ namespace Physics
         
         public Vector3 m_v3Torque = new Vector3();
         public Vector3 m_v3AngularAcceleration = new Vector3();
-        public Vector3 m_v3AngularVelocity = new Vector3(0.5f, 0.5f, 1);
-        public Quaternion m_qOrientation = new Quaternion(0, 1, 0, 0);
+        public Vector3 m_v3AngularVelocity = new Vector3();
+        public Quaternion m_qOrientation = new Quaternion(new Vector3(0,0,0));
 
         public Matrix4 m_m4World = Matrix4.Identity;
 
@@ -32,20 +34,17 @@ namespace Physics
 
         public void Update(float dt)
         {
-            //float step = dt / 100.0f;
-            //for (float time = 0.0f; time < dt; time += step)
-            {
-                m_fDeltaTime = /*step*/dt;
+            m_fDeltaTime = dt;
 
-                m_v3LinearAcceleration = m_v3Force / m_fMass;
-                m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
-                m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
+            m_v3LinearAcceleration = m_fGravity + (m_v3Force / m_fMass);
+            m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
+            m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
 
-                m_v3AngularAcceleration = m_v3Torque / m_fMass;
-                m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
-                m_qOrientation += Quaternion.Multiply(m_qOrientation, new Quaternion(m_v3AngularVelocity * (m_fDeltaTime / 2), 0));
-                m_qOrientation.Normalize();
-            }
+            m_v3AngularAcceleration = m_v3Torque / m_fMass;
+            m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
+            m_qOrientation += Quaternion.Multiply(m_qOrientation, new Quaternion(m_v3AngularVelocity * (m_fDeltaTime / 2), 0));
+            m_qOrientation.Normalize();
+
             m_m4World = Matrix4.Mult(Matrix4.CreateFromQuaternion(m_qOrientation), Matrix4.CreateTranslation(m_v3Position));
         }
 
@@ -57,13 +56,13 @@ namespace Physics
             {
                 Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), m_m4World).Xyz;
                 float t = plane.GetDistance(v3PointInWorld);
-                if (t < 0.0f) 
+                if (t <= 0.0f) 
                 {
                     Hit hit = new Hit();
 
                     hit.m_v3PositionInLocal = v3Point;
                     hit.m_v3Normal = plane.m_v3Normal;
-                    hit.m_fRestitution = 0.25f;
+                    hit.m_fRestitution = m_fRestitution;
                     hit.t = Math.Abs(t);
 
                     listHits.Add(hit);
@@ -93,7 +92,7 @@ namespace Physics
             }
 
             // separate
-            m_v3Position += plane.m_v3Normal * t;
+            m_v3Position += plane.m_v3Normal * (t + 0.0001f);
 
             m_m4World = Matrix4.Mult(Matrix4.CreateFromQuaternion(m_qOrientation), Matrix4.CreateTranslation(m_v3Position));
         }

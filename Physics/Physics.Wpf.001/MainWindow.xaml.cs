@@ -48,8 +48,11 @@ namespace Physics.Wpf._001
             plane = new Physics.Plane(new Vector3(0, 0, 0), new Vector3(0, 1, 0));
             rigidBody = new RigidBody();
 
+            rigidBody.m_fMass = 1.0f;
             rigidBody.m_v3Position = new Vector3(0, 10.0f, 0);
-            rigidBody.m_v3Force = new Vector3(0, -9.81f, 0);
+            rigidBody.m_fGravity = new Vector3(0, -9.81f, 0);
+            rigidBody.m_fRestitution = 0.25f;
+            rigidBody.m_v3AngularVelocity = new Vector3(0.5f, 0.5f, 1);
 
             rigidBody.m_listPoints.Add(new Vector3(-1, -1, -1));
             rigidBody.m_listPoints.Add(new Vector3(+1, -1, -1));
