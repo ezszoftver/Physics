@@ -15,7 +15,7 @@ namespace Physics
         public List<int> m_listIndices = new List<int>();
 
         public float m_fMass = 1.0f;
-        
+
         public Vector3 m_v3Force = new Vector3();
         public Vector3 m_v3LinearAcceleration = new Vector3();
         public Vector3 m_v3LinearVelocity = new Vector3();
@@ -29,11 +29,6 @@ namespace Physics
         public Matrix4 m_m4World = Matrix4.Identity;
 
         public float m_fDeltaTime = 0.0f;
-
-        Matrix4 InvInertia() 
-        {
-            return Matrix4.Identity;
-        }
 
         public void Update(float dt)
         {

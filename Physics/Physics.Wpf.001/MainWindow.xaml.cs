@@ -81,7 +81,7 @@ namespace Physics.Wpf._001
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Tick += Timer_Tick;
-            timer.Interval = TimeSpan.FromMilliseconds(0);
+            timer.Interval = TimeSpan.FromSeconds(0);
             timer.Start();
         }
 
