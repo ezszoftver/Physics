@@ -61,7 +61,7 @@ namespace Physics.Wpf._001
             rigidBody.m_listPoints.Add(new Vector3(+1, +1, +1));
 
             // back
-            rigidBody.m_listIndices.AddRange(new int[] { 0, 1, 2 });
+            rigidBody.m_listIndices.AddRange(new int[] { 0, 1, 3 });
             rigidBody.m_listIndices.AddRange(new int[] { 0, 2, 3 });
             // front
             rigidBody.m_listIndices.AddRange(new int[] { 4, 5, 7 });
