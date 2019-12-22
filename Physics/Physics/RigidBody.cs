@@ -24,7 +24,7 @@ namespace Physics
         public Vector3 m_v3Torque = new Vector3();
         public Vector3 m_v3AngularAcceleration = new Vector3();
         public Vector3 m_v3AngularVelocity = new Vector3(0.5f, 0.5f, 1);
-        public Quaternion m_qOrientation = new Quaternion(0, 1, 1, 0);
+        public Quaternion m_qOrientation = new Quaternion(0, 1, 0, 0);
 
         public Matrix4 m_m4World = Matrix4.Identity;
 
@@ -32,10 +32,10 @@ namespace Physics
 
         public void Update(float dt)
         {
-            //float step = 1.0f / 1000.0f;
+            //float step = dt / 100.0f;
             //for (float time = 0.0f; time < dt; time += step)
             {
-                m_fDeltaTime = dt /*step*/;
+                m_fDeltaTime = /*step*/dt;
 
                 m_v3LinearAcceleration = m_v3Force / m_fMass;
                 m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
@@ -62,9 +62,8 @@ namespace Physics
                     Hit hit = new Hit();
 
                     hit.m_v3PositionInLocal = v3Point;
-                    hit.m_v3PositionInWorld = v3PointInWorld;
                     hit.m_v3Normal = plane.m_v3Normal;
-                    hit.m_fRestitution = 0.5f;
+                    hit.m_fRestitution = 0.25f;
                     hit.t = Math.Abs(t);
 
                     listHits.Add(hit);
@@ -83,11 +82,11 @@ namespace Physics
                 Vector3 v3Velocity = GetPointVelocity(hit.m_v3PositionInLocal);
                 Vector3 rA = hit.m_v3PositionInLocal;
 
-                float nomin = -(1.0f + hit.m_fRestitution) * Vector3.Dot(v3Velocity, hit.m_v3Normal);
-                float denom = (1.0f / m_fMass) + Vector3.Dot(Vector3.Cross(rA, hit.m_v3Normal), Vector3.Cross(rA, hit.m_v3Normal));
-                float J = nomin / denom;
+                float nominator = -(1.0f + hit.m_fRestitution) * Vector3.Dot(v3Velocity, hit.m_v3Normal);
+                float denominator = (1.0f / m_fMass) + Vector3.Dot(Vector3.Cross(Vector3.Cross(rA, hit.m_v3Normal), rA), hit.m_v3Normal);
+                float J = nominator / denominator;
 
-                m_v3LinearVelocity += hit.m_v3Normal * J;
+                m_v3LinearVelocity += (J / m_fMass) * hit.m_v3Normal;
                 m_v3AngularVelocity += Vector3.Cross(rA, hit.m_v3Normal * J);
 
                 if (t < hit.t) { t = hit.t; }
@@ -95,6 +94,8 @@ namespace Physics
 
             // separate
             m_v3Position += plane.m_v3Normal * t;
+
+            m_m4World = Matrix4.Mult(Matrix4.CreateFromQuaternion(m_qOrientation), Matrix4.CreateTranslation(m_v3Position));
         }
 
         public Vector3 GetPointVelocity(Vector3 v3Point)
