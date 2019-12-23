@@ -34,50 +34,25 @@ namespace Physics
 
         public float m_fDeltaTime = 0.0f;
 
-        public float m_fMaxSleepTime = 1.0f;
-        public float m_fCurrentSleepTime = 0.0f;
-        private bool bIsSleeping = false;
-
-        void Sleep() 
-        {
-            bIsSleeping = true;
-        }
-
-        void Awake() 
-        {
-            bIsSleeping = false;
-            m_fCurrentSleepTime = 0.0f;
-        }
-
         public void Update(float dt)
         {
-            if (true == bIsSleeping) { return; }
-
             m_fDeltaTime = dt;
 
             m_v3LinearAcceleration = m_fGravity + (m_v3Force / m_fMass);
             m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
-            
             // damping
-            m_v3LinearVelocity *= (1.0f - m_fLinearDamping); 
-            if (m_v3LinearVelocity.Length < 0.005f) { m_v3LinearVelocity = new Vector3(0, 0, 0); }
-
+            m_v3LinearVelocity *= (1.0f - (m_fLinearDamping * m_fDeltaTime));
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
 
             m_v3AngularAcceleration = m_v3Torque / m_fMass;
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
-
             // damping
-            m_v3AngularVelocity *= (1.0f - m_fAngularDamping);
-            if (m_v3AngularVelocity.Length < (2.0f / 180.0f * (float)Math.PI)) { m_v3AngularVelocity = new Vector3(0, 0, 0); }
+            m_v3AngularVelocity *= (1.0f - (m_fAngularDamping * m_fDeltaTime));
 
             m_qOrientation += Quaternion.Multiply(m_qOrientation, new Quaternion(m_v3AngularVelocity * (m_fDeltaTime / 2), 0));
             m_qOrientation.Normalize();
 
             m_m4World = Matrix4.Mult(Matrix4.CreateFromQuaternion(m_qOrientation), Matrix4.CreateTranslation(m_v3Position));
-
-            if (m_v3LinearVelocity.Length < 0.005f && m_v3AngularVelocity.Length < (2.0f / 180.0f * (float)Math.PI)) { Sleep(); }
-            else { Awake(); }
         }
 
         public bool CollisionDetection(Plane plane, List<Hit> listHits)
@@ -98,8 +73,6 @@ namespace Physics
                     hit.t = Math.Abs(t);
 
                     listHits.Add(hit);
-
-                    Awake();
                 }
             }
 
