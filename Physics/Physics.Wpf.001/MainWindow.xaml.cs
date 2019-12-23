@@ -49,12 +49,12 @@ namespace Physics.Wpf._001
             rigidBody = new RigidBody();
 
             rigidBody.m_fMass = 1.0f;
-            rigidBody.m_v3Position = new Vector3(0, 10.0f, 0);
+            rigidBody.m_v3Position = new Vector3(0, 15.0f, 0);
             rigidBody.m_fGravity = new Vector3(0, -9.81f, 0);
             rigidBody.m_fRestitution = 0.6f;
-            rigidBody.m_v3AngularVelocity = new Vector3(0.5f, 0.5f, 1);
-            rigidBody.m_fLinearDamping = 0.1f;
-            rigidBody.m_fAngularDamping = 0.1f;
+            rigidBody.m_v3AngularVelocity = new Vector3(1.0f, 1.0f, 1.0f);
+            rigidBody.m_fLinearDamping = 0.7f;
+            rigidBody.m_fAngularDamping = 0.7f;
 
             rigidBody.m_listPoints.Add(new Vector3(-2, -1.0f, -1.5f));
             rigidBody.m_listPoints.Add(new Vector3(+2, -1.0f, -1.5f));

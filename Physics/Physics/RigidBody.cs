@@ -49,7 +49,7 @@ namespace Physics
             // damping
             if (m_v3LinearVelocity.Length > 0.001f)
             {
-                m_v3LinearVelocity -= m_v3LinearVelocity.Normalized() * m_fLinearDamping * m_fDeltaTime;
+                m_v3LinearVelocity -= m_v3LinearVelocity.Normalized() * (1.0f - m_fLinearDamping) * m_fDeltaTime;
             }
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
 
@@ -58,7 +58,7 @@ namespace Physics
             // damping
             if (m_v3AngularVelocity.Length > ToRadian(1.0f)) 
             {
-                m_v3AngularVelocity -= m_v3AngularVelocity.Normalized() * m_fAngularDamping * m_fDeltaTime;
+                m_v3AngularVelocity -= m_v3AngularVelocity.Normalized() * (1.0f - m_fAngularDamping) * m_fDeltaTime;
             }
 
             m_qOrientation += Quaternion.Multiply(m_qOrientation, new Quaternion(m_v3AngularVelocity * (m_fDeltaTime / 2), 0));
