@@ -111,7 +111,7 @@ namespace Physics
             }
 
             // separate
-            m_v3Position += plane.m_v3Normal * (t + 0.0001f);
+            m_v3Position += plane.m_v3Normal * t;
 
             m_m4World = Matrix4.Mult(Matrix4.CreateFromQuaternion(m_qOrientation), Matrix4.CreateTranslation(m_v3Position));
         }
