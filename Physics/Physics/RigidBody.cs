@@ -34,6 +34,12 @@ namespace Physics
 
         public float m_fDeltaTime = 0.0f;
 
+        float ToRadian(float fDegree) 
+        {
+            float fRadian = (fDegree / 180.0f) * (float)Math.PI;
+            return fRadian;
+        }
+
         public void Update(float dt)
         {
             m_fDeltaTime = dt;
@@ -41,13 +47,19 @@ namespace Physics
             m_v3LinearAcceleration = m_fGravity + (m_v3Force / m_fMass);
             m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
             // damping
-            m_v3LinearVelocity *= (1.0f - (m_fLinearDamping * m_fDeltaTime));
+            if (m_v3LinearVelocity.Length > 0.001f)
+            {
+                m_v3LinearVelocity -= m_v3LinearVelocity.Normalized() * m_fLinearDamping * m_fDeltaTime;
+            }
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
 
             m_v3AngularAcceleration = m_v3Torque / m_fMass;
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
             // damping
-            m_v3AngularVelocity *= (1.0f - (m_fAngularDamping * m_fDeltaTime));
+            if (m_v3AngularVelocity.Length > ToRadian(1.0f)) 
+            {
+                m_v3AngularVelocity -= m_v3AngularVelocity.Normalized() * m_fAngularDamping * m_fDeltaTime;
+            }
 
             m_qOrientation += Quaternion.Multiply(m_qOrientation, new Quaternion(m_v3AngularVelocity * (m_fDeltaTime / 2), 0));
             m_qOrientation.Normalize();
