@@ -53,6 +53,8 @@ namespace Physics.Wpf._001
             rigidBody.m_fGravity = new Vector3(0, -9.81f, 0);
             rigidBody.m_fRestitution = 0.25f;
             rigidBody.m_v3AngularVelocity = new Vector3(0.5f, 0.5f, 1);
+            rigidBody.m_fLinearDamping = 0.01f;
+            rigidBody.m_fAngularDamping = 0.01f;
 
             rigidBody.m_listPoints.Add(new Vector3(-1, -1, -1));
             rigidBody.m_listPoints.Add(new Vector3(+1, -1, -1));
