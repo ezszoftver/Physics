@@ -79,7 +79,7 @@ namespace Physics
                 {
                     Hit hit = new Hit();
 
-                    hit.m_v3PositionInLocal = v3Point;
+                    hit.m_v3PositionInWorld = v3PointInWorld;
                     hit.m_v3Normal = plane.m_v3Normal;
                     hit.m_fRestitution = m_fRestitution;
                     hit.t = Math.Abs(t);
@@ -91,14 +91,22 @@ namespace Physics
             return (listHits.Count() > 0);
         }
 
+        Matrix3 InvInertia() 
+        {
+            Matrix3 mat4InvInertia = Matrix3.CreateFromQuaternion(m_qOrientation);
+            mat4InvInertia.Invert();
+
+            return mat4InvInertia;
+        }
+
         public void CollisionResponse(Plane plane, List<Hit> listHits)
         {
-            float t = float.MinValue;
-
             foreach (Hit hit in listHits) 
             {
-                Vector3 v3Velocity = GetPointVelocity(hit.m_v3PositionInLocal);
-                Vector3 rA = hit.m_v3PositionInLocal;
+                Vector3 rA = hit.m_v3PositionInWorld - m_v3Position;
+                rA = Vector3.Transform(rA, InvInertia());
+
+                Vector3 v3Velocity = GetPointVelocity(rA);
 
                 float nominator = -(1.0f + hit.m_fRestitution) * Vector3.Dot(v3Velocity, hit.m_v3Normal);
                 float denominator = (1.0f / m_fMass) + Vector3.Dot(Vector3.Cross(Vector3.Cross(rA, hit.m_v3Normal), rA), hit.m_v3Normal);
@@ -106,14 +114,12 @@ namespace Physics
 
                 m_v3LinearVelocity += (J / m_fMass) * hit.m_v3Normal;
                 m_v3AngularVelocity += Vector3.Cross(rA, hit.m_v3Normal * J);
-
-                if (t < hit.t) { t = hit.t; }
             }
 
             // separate
+            float t = float.MinValue;
+            foreach (Hit hit in listHits) { if (t < hit.t) { t = hit.t; } }
             m_v3Position += plane.m_v3Normal * t;
-
-            m_m4World = Matrix4.Mult(Matrix4.CreateFromQuaternion(m_qOrientation), Matrix4.CreateTranslation(m_v3Position));
         }
 
         public Vector3 GetPointVelocity(Vector3 v3Point)
