@@ -91,8 +91,8 @@ namespace Physics
             foreach (Hit hit in listHits) 
             {
                 Vector3 rA = hit.m_v3PositionInWorld - m_v3Position;
-                rA = Vector3.Transform(rA, InvInertia());
                 Vector3 v3Velocity = GetPointVelocity(rA);
+                rA = Vector3.Transform(rA, InvInertia());
 
                 float fRelVelocity = Vector3.Dot(v3Velocity, hit.m_v3Normal);
 
@@ -115,7 +115,7 @@ namespace Physics
 
         public Vector3 GetPointVelocity(Vector3 v3Point)
         {
-            return (m_v3LinearVelocity + Vector3.Cross(m_v3AngularVelocity, v3Point));
+            return (m_v3LinearVelocity + Vector3.Cross(m_v3AngularVelocity, Vector3.Transform(v3Point, InvInertia()) ));
         }
 
         public void Draw() 
