@@ -32,7 +32,7 @@ namespace Physics
 
         public float m_fDeltaTime = 0.0f;
 
-        float ToRadian(float fDegree) 
+        public static float ToRadian(float fDegree)
         {
             float fRadian = (fDegree / 180.0f) * (float)Math.PI;
             return fRadian;
@@ -62,14 +62,14 @@ namespace Physics
             {
                 Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), m_m4World).Xyz;
                 float t = plane.GetDistance(v3PointInWorld);
-                if (t <= 0.0f) 
+                if (t < 0.0f) 
                 {
                     Hit hit = new Hit();
 
-                    hit.m_v3PositionInWorld = v3PointInWorld;
                     hit.m_v3Normal = plane.m_v3Normal;
                     hit.m_fRestitution = m_fRestitution;
                     hit.t = Math.Abs(t);
+                    hit.m_v3PositionInWorld = v3PointInWorld + (plane.m_v3Normal * Math.Abs(t));
 
                     listHits.Add(hit);
                 }
@@ -78,44 +78,45 @@ namespace Physics
             return (listHits.Count() > 0);
         }
 
-        Matrix3 InvInertia() 
-        {
-            Matrix3 mat4InvInertia = Matrix3.CreateFromQuaternion(m_qOrientation);
-            mat4InvInertia.Invert();
-
-            return mat4InvInertia;
-        }
-
         public void CollisionResponse(Plane plane, List<Hit> listHits)
         {
-            foreach (Hit hit in listHits) 
+            Hit hit = new Hit();
+            hit.t = float.MinValue;
+            foreach (Hit hit2 in listHits) 
+            {
+                hit.m_fRestitution = hit2.m_fRestitution;
+                hit.m_v3Normal = hit2.m_v3Normal;
+                hit.m_v3PositionInWorld += hit2.m_v3PositionInWorld;
+
+                if (hit2.t > hit.t) { hit.t = hit2.t; }
+            }
+
+            hit.m_v3PositionInWorld /= (float)listHits.Count();
+
             {
                 Vector3 rA = hit.m_v3PositionInWorld - m_v3Position;
                 Vector3 v3Velocity = GetPointVelocity(rA);
-                rA = Vector3.Transform(rA, InvInertia());
 
                 float fRelVelocity = Vector3.Dot(v3Velocity, hit.m_v3Normal);
 
                 float nominator = -(1.0f + hit.m_fRestitution) * fRelVelocity;
                 float term1 = 1.0f / m_fMass;
-                float term2 = 0.0f;
+                float term2 = 0.001f;
                 float term3 = Vector3.Dot(hit.m_v3Normal, Vector3.Cross(Vector3.Cross(rA, hit.m_v3Normal), rA));
                 float term4 = 0.0f;
                 float J = nominator / (term1 + term2 + term3 + term4);
 
                 m_v3LinearVelocity += (J / m_fMass) * hit.m_v3Normal;
-                m_v3AngularVelocity += J * Vector3.Cross(rA, hit.m_v3Normal);
+                m_v3AngularVelocity = J * Vector3.Cross(rA, hit.m_v3Normal);
             }
 
             // separate
-            float t = float.MinValue;
-            foreach (Hit hit in listHits) { if (t < hit.t) { t = hit.t; } }
-            m_v3Position += plane.m_v3Normal * t;
+            m_v3Position += hit.m_v3Normal * hit.t;
         }
 
         public Vector3 GetPointVelocity(Vector3 v3Point)
         {
-            return (m_v3LinearVelocity + Vector3.Cross(m_v3AngularVelocity, Vector3.Transform(v3Point, InvInertia()) ));
+            return (m_v3LinearVelocity + Vector3.Cross(m_v3AngularVelocity, v3Point));
         }
 
         public void Draw() 

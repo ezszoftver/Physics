@@ -37,6 +37,11 @@ namespace Physics.Wpf._001
             InitializeComponent();
         }
 
+        float ToRadian(float fDegree) 
+        {
+            return (fDegree / 180.0f * (float)Math.PI);
+        }
+
         private void glControl_Load(object sender, EventArgs e)
         {
             glControl.MakeCurrent();
@@ -45,23 +50,23 @@ namespace Physics.Wpf._001
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.ClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 
-            plane = new Physics.Plane(new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            plane = new Physics.Plane(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 1, 0));
             rigidBody = new RigidBody();
 
-            rigidBody.m_fMass = 1.0f;
-            rigidBody.m_v3Position = new Vector3(0, 15.0f, 0);
+            rigidBody.m_fMass = 1.1f;
+            rigidBody.m_v3Position = new Vector3(0, 5.0f, 0);
             rigidBody.m_fGravity = new Vector3(0, -9.81f, 0);
-            rigidBody.m_fRestitution = 0.6f;
-            rigidBody.m_v3AngularVelocity = new Vector3(1.0f, 1.0f, 1.0f);
+            rigidBody.m_fRestitution = 0.1f;
+            rigidBody.m_qOrientation = new Quaternion(new Vector3(1.0f, 0, 0).Normalized(), ToRadian(30.0f));
 
-            rigidBody.m_listPoints.Add(new Vector3(-2, -1.0f, -1.5f));
-            rigidBody.m_listPoints.Add(new Vector3(+2, -1.0f, -1.5f));
-            rigidBody.m_listPoints.Add(new Vector3(-2, +1.0f, -1.5f));
-            rigidBody.m_listPoints.Add(new Vector3(+2, +1.0f, -1.5f));
-            rigidBody.m_listPoints.Add(new Vector3(-2, -1.0f, +1.5f));
-            rigidBody.m_listPoints.Add(new Vector3(+2, -1.0f, +1.5f));
-            rigidBody.m_listPoints.Add(new Vector3(-2, +1.0f, +1.5f));
-            rigidBody.m_listPoints.Add(new Vector3(+2, +1.0f, +1.5f));
+            rigidBody.m_listPoints.Add(new Vector3(-1.0f, -1.0f, -1.0f));
+            rigidBody.m_listPoints.Add(new Vector3(+1.0f, -1.0f, -1.0f));
+            rigidBody.m_listPoints.Add(new Vector3(-1.0f, +1.0f, -1.0f));
+            rigidBody.m_listPoints.Add(new Vector3(+1.0f, +1.0f, -1.0f));
+            rigidBody.m_listPoints.Add(new Vector3(-1.0f, -1.0f, +1.0f));
+            rigidBody.m_listPoints.Add(new Vector3(+1.0f, -1.0f, +1.0f));
+            rigidBody.m_listPoints.Add(new Vector3(-1.0f, +1.0f, +1.0f));
+            rigidBody.m_listPoints.Add(new Vector3(+1.0f, +1.0f, +1.0f));
 
             // back
             rigidBody.m_listIndices.AddRange(new int[] { 0, 1, 3 });
@@ -94,6 +99,8 @@ namespace Physics.Wpf._001
             elapsedTime = currentTime;
             currentTime = DateTime.Now;
             float dt = (float)(currentTime - elapsedTime).TotalSeconds;
+            if (dt < 0.0f) { dt = 0.0f; }
+            if (dt > (1.0f / 10.0f)) { dt = (1.0f / 10.0f); } // min. 10fps
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -108,7 +115,7 @@ namespace Physics.Wpf._001
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            int steps = 10;
+            int steps = 100;
             float step = dt / (float)steps;
 
             for (int i = 0; i < steps; i++) 
