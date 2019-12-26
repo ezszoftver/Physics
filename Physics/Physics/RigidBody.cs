@@ -21,13 +21,11 @@ namespace Physics
         public Vector3 m_v3Force = new Vector3();
         public Vector3 m_v3LinearAcceleration = new Vector3();
         public Vector3 m_v3LinearVelocity = new Vector3();
-        public float m_fLinearDamping = 0.0f;
         public Vector3 m_v3Position = new Vector3();
         
         public Vector3 m_v3Torque = new Vector3();
         public Vector3 m_v3AngularAcceleration = new Vector3();
         public Vector3 m_v3AngularVelocity = new Vector3();
-        public float m_fAngularDamping = 0.0f;
         public Quaternion m_qOrientation = new Quaternion(new Vector3(0,0,0));
 
         public Matrix4 m_m4World = Matrix4.Identity;
@@ -46,21 +44,10 @@ namespace Physics
 
             m_v3LinearAcceleration = m_fGravity + (m_v3Force / m_fMass);
             m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
-            // damping
-            if (m_v3LinearVelocity.Length > 0.001f)
-            {
-                m_v3LinearVelocity -= m_v3LinearVelocity.Normalized() * (1.0f - m_fLinearDamping) * m_fDeltaTime;
-            }
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
 
             m_v3AngularAcceleration = m_v3Torque / m_fMass;
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
-            // damping
-            if (m_v3AngularVelocity.Length > ToRadian(1.0f)) 
-            {
-                m_v3AngularVelocity -= m_v3AngularVelocity.Normalized() * (1.0f - m_fAngularDamping) * m_fDeltaTime;
-            }
-
             m_qOrientation += Quaternion.Multiply(m_qOrientation, new Quaternion(m_v3AngularVelocity * (m_fDeltaTime / 2), 0));
             m_qOrientation.Normalize();
 
@@ -105,15 +92,19 @@ namespace Physics
             {
                 Vector3 rA = hit.m_v3PositionInWorld - m_v3Position;
                 rA = Vector3.Transform(rA, InvInertia());
-
                 Vector3 v3Velocity = GetPointVelocity(rA);
 
-                float nominator = -(1.0f + hit.m_fRestitution) * Vector3.Dot(v3Velocity, hit.m_v3Normal);
-                float denominator = (1.0f / m_fMass) + Vector3.Dot(Vector3.Cross(Vector3.Cross(rA, hit.m_v3Normal), rA), hit.m_v3Normal);
-                float J = nominator / denominator;
+                float fRelVelocity = Vector3.Dot(v3Velocity, hit.m_v3Normal);
+
+                float nominator = -(1.0f + hit.m_fRestitution) * fRelVelocity;
+                float term1 = 1.0f / m_fMass;
+                float term2 = 0.0f;
+                float term3 = Vector3.Dot(hit.m_v3Normal, Vector3.Cross(Vector3.Cross(rA, hit.m_v3Normal), rA));
+                float term4 = 0.0f;
+                float J = nominator / (term1 + term2 + term3 + term4);
 
                 m_v3LinearVelocity += (J / m_fMass) * hit.m_v3Normal;
-                m_v3AngularVelocity += Vector3.Cross(rA, hit.m_v3Normal * J);
+                m_v3AngularVelocity += J * Vector3.Cross(rA, hit.m_v3Normal);
             }
 
             // separate
