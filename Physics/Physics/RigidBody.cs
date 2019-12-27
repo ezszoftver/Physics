@@ -71,7 +71,6 @@ namespace Physics
                     Hit hit = new Hit();
 
                     hit.m_v3Normal = plane.m_v3Normal;
-                    hit.m_fRestitution = m_fRestitution;
                     hit.t = Math.Abs(t);
                     hit.m_v3PositionInWorld = v3PointInWorld + (plane.m_v3Normal * Math.Abs(t));
 
@@ -91,7 +90,7 @@ namespace Physics
 
                 float fRelVelocity = Vector3.Dot(v3Velocity, hit.m_v3Normal);
 
-                float nominator = -(1.0f + hit.m_fRestitution) * fRelVelocity;
+                float nominator = -(1.0f + m_fRestitution) * fRelVelocity;
                 float term1 = 1.0f / m_fMass;
                 float term2 = 0.0f;
                 float term3 = Vector3.Dot(hit.m_v3Normal, Vector3.Cross(Vector3.Cross(rA, hit.m_v3Normal), rA));
