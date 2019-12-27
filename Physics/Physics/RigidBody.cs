@@ -26,7 +26,7 @@ namespace Physics
         public Vector3 m_v3Torque = new Vector3();
         public Vector3 m_v3AngularAcceleration = new Vector3();
         public Vector3 m_v3AngularVelocity = new Vector3();
-        public Quaternion m_qOrientation = new Quaternion(new Vector3(0,0,0));
+        public Vector3 m_v3Rotate = new Vector3();
 
         public Matrix4 m_m4World = Matrix4.Identity;
 
@@ -45,13 +45,17 @@ namespace Physics
             m_v3LinearAcceleration = m_fGravity + (m_v3Force / m_fMass);
             m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
+            Matrix4 m4Translate = Matrix4.CreateTranslation(m_v3Position);
 
             m_v3AngularAcceleration = m_v3Torque / m_fMass;
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
-            m_qOrientation += Quaternion.Multiply(m_qOrientation, new Quaternion(m_v3AngularVelocity * (m_fDeltaTime / 2), 0));
-            m_qOrientation.Normalize();
+            m_v3Rotate += m_v3AngularVelocity * m_fDeltaTime;
+            Matrix4 m4RotX = Matrix4.CreateRotationX(m_v3Rotate.X);
+            Matrix4 m4RotY = Matrix4.CreateRotationY(m_v3Rotate.Y);
+            Matrix4 m4RotZ = Matrix4.CreateRotationZ(m_v3Rotate.Z);
+            Matrix4 m4RotXYZ = Matrix4.Mult(Matrix4.Mult(m4RotX, m4RotY), m4RotZ);
 
-            m_m4World = Matrix4.Mult(Matrix4.CreateFromQuaternion(m_qOrientation), Matrix4.CreateTranslation(m_v3Position));
+            m_m4World = Matrix4.Mult(m4RotXYZ, m4Translate);
         }
 
         public bool CollisionDetection(Plane plane, List<Hit> listHits)
@@ -80,19 +84,7 @@ namespace Physics
 
         public void CollisionResponse(Plane plane, List<Hit> listHits)
         {
-            Hit hit = new Hit();
-            hit.t = float.MinValue;
-            foreach (Hit hit2 in listHits) 
-            {
-                hit.m_fRestitution = hit2.m_fRestitution;
-                hit.m_v3Normal = hit2.m_v3Normal;
-                hit.m_v3PositionInWorld += hit2.m_v3PositionInWorld;
-
-                if (hit2.t > hit.t) { hit.t = hit2.t; }
-            }
-
-            hit.m_v3PositionInWorld /= (float)listHits.Count();
-
+            foreach (Hit hit in listHits)
             {
                 Vector3 rA = hit.m_v3PositionInWorld - m_v3Position;
                 Vector3 v3Velocity = GetPointVelocity(rA);
@@ -101,17 +93,22 @@ namespace Physics
 
                 float nominator = -(1.0f + hit.m_fRestitution) * fRelVelocity;
                 float term1 = 1.0f / m_fMass;
-                float term2 = 0.001f;
+                float term2 = 0.0f;
                 float term3 = Vector3.Dot(hit.m_v3Normal, Vector3.Cross(Vector3.Cross(rA, hit.m_v3Normal), rA));
                 float term4 = 0.0f;
                 float J = nominator / (term1 + term2 + term3 + term4);
 
                 m_v3LinearVelocity += (J / m_fMass) * hit.m_v3Normal;
-                m_v3AngularVelocity = J * Vector3.Cross(rA, hit.m_v3Normal);
+                m_v3AngularVelocity += (J * Vector3.Cross(rA, hit.m_v3Normal)) / m_fMass;
             }
 
             // separate
-            m_v3Position += hit.m_v3Normal * hit.t;
+            Hit hitMaxT = new Hit();
+            foreach (Hit currentHit in listHits) 
+            {
+                if (currentHit.t > hitMaxT.t) { hitMaxT = currentHit; }
+            }
+            m_v3Position += hitMaxT.m_v3Normal * hitMaxT.t;
         }
 
         public Vector3 GetPointVelocity(Vector3 v3Point)
