@@ -98,7 +98,7 @@ namespace Physics
                 float J = nominator / (term1 + term2 + term3 + term4);
 
                 m_v3LinearVelocity += (J / m_fMass) * hit.m_v3Normal;
-                m_v3AngularVelocity += (J * Vector3.Cross(rA, hit.m_v3Normal)) / m_fMass;
+                m_v3AngularVelocity += (J / m_fMass) * Vector3.Cross(rA, hit.m_v3Normal);
             }
 
             // separate
