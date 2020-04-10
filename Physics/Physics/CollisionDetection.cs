@@ -49,6 +49,7 @@ namespace Physics
 
         public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits, ref Vector3 v3Separate) 
         {
+            // aabb swep-test
             if
             (
                 false == IsOverlapAABB(rigidBody1, rigidBody2)
@@ -58,9 +59,18 @@ namespace Physics
                 return false;
             }
 
+            // points in other body
+            List<Vector3> listPoints2 = new List<Vector3>();
+            GetPointsInConvexMesh(rigidBody1, rigidBody2, ref listPoints2);
+            List<Vector3> listPoints1 = new List<Vector3>();
+            GetPointsInConvexMesh(rigidBody2, rigidBody1, ref listPoints1);
+
+            // separate
             listHits.Clear();
-            GetPointsInConvexMesh(rigidBody1, rigidBody2, listHits);
-            GetPointsInConvexMesh(rigidBody2, rigidBody1, listHits);
+            ;
+
+            // calc hits
+            ;
 
             return true;
         }
@@ -130,9 +140,35 @@ namespace Physics
             return (bCollX && bCollY && bCollZ);
         }
 
-        private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits) 
+        private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Vector3> listPoints)
         {
+            listPoints.Clear();
 
+            Matrix4 m4FinalTransform = Matrix4.Mult(rigidBody2.m_m4World, rigidBody1.m_m4World.Inverted());
+
+            foreach (Vector3 v3Point in rigidBody2.m_listPoints)
+            {
+                Vector3 v3PointInLocal = Vector4.Transform(new Vector4(v3Point, 1), m4FinalTransform).Xyz;
+
+                int nId = 0;
+                for (int id = 0; id < rigidBody1.m_listIndices.Count; id += 3, nId++) 
+                {
+                    Vector3 v3AInLocal = rigidBody1.m_listPoints[ rigidBody1.m_listIndices[id + 0] ];
+                    Vector3 v3NLocal = rigidBody1.m_listTriangleNormals[nId];
+
+                    Vector3 v3Dir = (v3PointInLocal - v3AInLocal).Normalized();
+
+                    if (Vector3.CalculateAngle(v3NLocal, v3Dir) > ToRadian(90.0f)) 
+                    {
+                        listPoints.Add(v3Point);
+                    }
+                }
+            }
+        }
+
+        private static float ToRadian(float fDegree)
+        {
+            return (fDegree / 180.0f * (float)Math.PI);
         }
     }
 }

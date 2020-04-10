@@ -13,7 +13,7 @@ namespace Physics
     {
         public List<Vector3> m_listPoints = new List<Vector3>();
         public List<int> m_listIndices = new List<int>();
-        private List<Vector3> m_listTriangleNormals = new List<Vector3>();
+        public List<Vector3> m_listTriangleNormals = new List<Vector3>();
 
         public Vector3 m_fGravity = new Vector3();
         public float m_fMass = 1.0f;
@@ -101,13 +101,6 @@ namespace Physics
                     Vector3 v3PC = m_listPoints[ m_listIndices[id + 2] ];
                     Vector3 v3PCInWorld = Vector4.Transform(new Vector4(v3PC, 1), m_m4World).Xyz;
                     GL.Vertex3(v3PCInWorld);
-
-                    //// N
-                    //Vector3 v3NStart = (v3PA + v3PB + v3PC) / 3.0f;
-                    //Vector3 v3NEnd = v3NStart + (m_listTriangleNormals[nId]) * 0.333f;
-                    //
-                    //GL.Color3(0.0f, 1.0f, 0.0f);
-                    //GL
                 }
             }
             GL.End();
