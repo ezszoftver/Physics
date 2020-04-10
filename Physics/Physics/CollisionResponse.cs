@@ -31,8 +31,18 @@ namespace Physics
                 rigidBody.m_v3AngularVelocity += (J / rigidBody.m_fMass) * Vector3.Cross(rA, hit.m_v3Normal);
             }
 
-            // separate
+			// separate
             rigidBody.m_v3Position += v3Separate;
+        }
+
+
+        public static void Invert(ref List<Hit> listHits, ref Vector3 v3Separate) 
+        {
+			v3Separate *= -1.0f;
+            foreach (Hit hit in listHits) 
+            {
+                hit.m_v3Normal *= -1.0f;
+            }
         }
     }
 }

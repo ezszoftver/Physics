@@ -54,8 +54,8 @@ namespace Physics.Wpf._001
             rigidBody = new RigidBody();
 
             rigidBody.m_fMass = 1.0f;
-            rigidBody.m_v3Position = new Vector3(0, 10.0f, 0);
-            rigidBody.m_fGravity = new Vector3(0, -9.81f, 0);
+            rigidBody.m_v3Position = new Vector3(0, 8.0f, 0);
+            rigidBody.m_fGravity = new Vector3(0, -1.0f, 0);
             rigidBody.m_fRestitution = 0.5f;
             rigidBody.m_v3Rotate = new Vector3(ToRadian(30.0f), 0, ToRadian(20.0f));
 
@@ -107,7 +107,7 @@ namespace Physics.Wpf._001
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             Matrix4 m_world = Matrix4.Identity;
-            Matrix4 m_view = Matrix4.LookAt(new Vector3(0, 2, 10), new Vector3(0, 2, 0), new Vector3(0, 1, 0));
+            Matrix4 m_view = Matrix4.LookAt(new Vector3(2, 6, 15), new Vector3(0, 2, 0), new Vector3(0, 1, 0));
             Matrix4 m_modelview = Matrix4.Mult(m_world, m_view);
             Matrix4 m_proj = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 2.0f, (float)glControl.Width / (float)glControl.Height, 0.05f, 1000.0f);
 
@@ -117,17 +117,18 @@ namespace Physics.Wpf._001
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            int steps = 10;
+            int steps = 20;
             float step = dt / (float)steps;
 
             for (int i = 0; i < steps; i++) 
             {
                 rigidBody.Update(step);
 
-                Vector3 v3Separate = new Vector3();
+				Vector3 v3Separate = new Vector3();
                 List<Hit> listHits = new List<Hit>();
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody, plane, ref listHits, ref v3Separate))
                 {
+                    Physics.CollisionDetection.DrawHits(listHits);
                     Physics.CollisionResponse.Apply(rigidBody, listHits, v3Separate);
                 }
             }

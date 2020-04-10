@@ -12,6 +12,5 @@ namespace Physics
     {
         public Vector3 m_v3PositionInWorld = new Vector3();
         public Vector3 m_v3Normal   = new Vector3();
-        public float t = 0.0f;
-    }
+		public float t = 0.0f;    }
 }

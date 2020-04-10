@@ -51,6 +51,7 @@ namespace Physics
             m_v3AngularAcceleration = m_v3Torque / m_fMass;
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
             m_v3Rotate += m_v3AngularVelocity * m_fDeltaTime;
+            
             Matrix4 m4RotX = Matrix4.CreateRotationX(m_v3Rotate.X);
             Matrix4 m4RotY = Matrix4.CreateRotationY(m_v3Rotate.Y);
             Matrix4 m4RotZ = Matrix4.CreateRotationZ(m_v3Rotate.Z);
@@ -106,38 +107,38 @@ namespace Physics
             GL.End();
 
             // normals
-            GL.Begin(PrimitiveType.Lines);
-            {
-                GL.Color3(0.0f, 1.0f, 0.0f);
-
-                int nId = 0;
-                for (int id = 0; id < m_listIndices.Count; id += 3, nId++)
-                {
-                    // A
-                    Vector3 v3PA = m_listPoints[m_listIndices[id + 0]];
-                    Vector3 v3PAInWorld = Vector4.Transform(new Vector4(v3PA, 1), m_m4World).Xyz;
-
-                    // B
-                    Vector3 v3PB = m_listPoints[m_listIndices[id + 1]];
-                    Vector3 v3PBInWorld = Vector4.Transform(new Vector4(v3PB, 1), m_m4World).Xyz;
-                    
-                    // C
-                    Vector3 v3PC = m_listPoints[m_listIndices[id + 2]];
-                    Vector3 v3PCInWorld = Vector4.Transform(new Vector4(v3PC, 1), m_m4World).Xyz;
-
-                    // N
-                    Vector3 v3N = m_listTriangleNormals[nId];
-                    Vector3 v3NInWorld = Vector4.Transform(new Vector4(v3N, 0), m_m4World).Xyz;
-
-                    Vector3 v3NStart = (v3PAInWorld + v3PBInWorld + v3PCInWorld) / 3.0f;
-                    Vector3 v3NEnd = v3NStart + (v3NInWorld * 1.0f);
-
-                    GL.Vertex3(v3NStart);
-                    GL.Vertex3(v3NEnd);
-                }
-
-            }
-            GL.End();
+            //GL.Begin(PrimitiveType.Lines);
+            //{
+            //    GL.Color3(0.0f, 1.0f, 0.0f);
+            //
+            //    int nId = 0;
+            //    for (int id = 0; id < m_listIndices.Count; id += 3, nId++)
+            //    {
+            //        // A
+            //        Vector3 v3PA = m_listPoints[m_listIndices[id + 0]];
+            //        Vector3 v3PAInWorld = Vector4.Transform(new Vector4(v3PA, 1), m_m4World).Xyz;
+            //
+            //        // B
+            //        Vector3 v3PB = m_listPoints[m_listIndices[id + 1]];
+            //        Vector3 v3PBInWorld = Vector4.Transform(new Vector4(v3PB, 1), m_m4World).Xyz;
+            //        
+            //        // C
+            //        Vector3 v3PC = m_listPoints[m_listIndices[id + 2]];
+            //        Vector3 v3PCInWorld = Vector4.Transform(new Vector4(v3PC, 1), m_m4World).Xyz;
+            //
+            //        // N
+            //        Vector3 v3N = m_listTriangleNormals[nId];
+            //        Vector3 v3NInWorld = Vector4.Transform(new Vector4(v3N, 0), m_m4World).Xyz;
+            //
+            //        Vector3 v3NStart = (v3PAInWorld + v3PBInWorld + v3PCInWorld) / 3.0f;
+            //        Vector3 v3NEnd = v3NStart + (v3NInWorld * 1.0f);
+            //
+            //        GL.Vertex3(v3NStart);
+            //        GL.Vertex3(v3NEnd);
+            //    }
+            //
+            //}
+            //GL.End();
         }
     }
 }

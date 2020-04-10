@@ -26,7 +26,7 @@ namespace Physics
             return t;
         }
 
-        public void Draw(float size = 5.0f) 
+        public void Draw(float size = 7.5f) 
         {
             GL.Begin(PrimitiveType.Triangles);
             {
