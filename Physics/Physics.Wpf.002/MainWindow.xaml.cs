@@ -179,8 +179,11 @@ namespace Physics.Wpf._002
                     Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate);
                 }
 
-                listHits.Clear();
-                if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits, ref v3Separate)) 
+                List<Hit> listHits1 = new List<Hit>();
+                List<Hit> listHits2 = new List<Hit>();
+                Vector3 v3Separate1 = new Vector3();
+                Vector3 v3Separate2 = new Vector3();
+                if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits1, ref v3Separate1, ref listHits2, ref v3Separate2)) 
                 {
                     ;
                 }

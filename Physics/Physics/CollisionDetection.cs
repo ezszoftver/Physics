@@ -47,7 +47,7 @@ namespace Physics
             return false;
         }
 
-        public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits, ref Vector3 v3Separate) 
+        public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits1, ref Vector3 v3Separate1, ref List<Hit> listHits2, ref Vector3 v3Separate2) 
         {
             // aabb swep-test
             if
@@ -66,16 +66,40 @@ namespace Physics
             GetPointsInConvexMesh(rigidBody2, rigidBody1, ref listPoints2);
 
             // separate
-            Vector3 v3Separate1 = SearchMinSeparate(rigidBody1, listPoints1);
-            Vector3 v3Separate2 = SearchMinSeparate(rigidBody2, listPoints2);
+            Vector3 v3Normal1 = new Vector3();
+            float t1 = 0.0f;
+            SearchMinSeparate(rigidBody1, listPoints1, ref v3Normal1, ref t1);
 
-            listHits.Clear();
-            ;
+            Vector3 v3Normal2 = new Vector3();
+            float t2 = 0.0f;
+            SearchMinSeparate(rigidBody2, listPoints2, ref v3Normal2, ref t2);
 
             // create hits
-            ;
+            listHits1.Clear();
+            foreach (Vector3 v3PosInWorld in listPoints1) 
+            {
+                Hit hit = new Hit();
+                hit.m_v3PositionInWorld = v3PosInWorld;
+                hit.m_v3Normal = v3Normal1;
+                hit.t = t1;
 
-            return true;
+                listHits1.Add(hit);
+            }
+            v3Separate1 = v3Normal1 * t1;
+
+            listHits2.Clear();
+            foreach (Vector3 v3PosInWorld in listPoints2)
+            {
+                Hit hit = new Hit();
+                hit.m_v3PositionInWorld = v3PosInWorld;
+                hit.m_v3Normal = v3Normal2;
+                hit.t = t2;
+
+                listHits2.Add(hit);
+            }
+            v3Separate2 = v3Normal2 * t2;
+
+            return ( listHits1.Count() > 0 || listHits2.Count() > 0 );
         }
 
         private static bool IsOverlapAABB(RigidBody rigidBody1, RigidBody rigidBody2) 
@@ -181,15 +205,15 @@ namespace Physics
             return (fDegree / 180.0f * (float)Math.PI);
         }
 
-        private static Vector3 SearchMinSeparate(RigidBody rigidBody, List<Vector3> listPoints) 
+        private static void SearchMinSeparate(RigidBody rigidBody, List<Vector3> listPoints, ref Vector3 v3RetMinSeparateNormal, ref float fRetMinDist) 
         {
-            Vector3 v3RetMinSeparate = new Vector3();
-            float fRetMinDist = float.MaxValue;
-
             if (0 == listPoints.Count()) 
             {
-                return v3RetMinSeparate;
+                return;
             }
+
+            v3RetMinSeparateNormal = new Vector3();
+            fRetMinDist = float.MaxValue;
 
             int nId = 0;
             for (int id = 0; id < rigidBody.m_listIndices.Count; id += 3, nId++)
@@ -205,7 +229,7 @@ namespace Physics
 
                 Plane plane = new Plane(v3AInWorld, v3NInWorld);
 
-                Vector3 v3LocalMaxSeparate = new Vector3();
+                Vector3 v3LocalMaxSeparateNormal = new Vector3();
                 float fLocalMaxDist = float.MinValue;
 
                 foreach (Vector3 v3PointInWorld in listPoints) 
@@ -214,19 +238,17 @@ namespace Physics
 
                     if (fDist > fLocalMaxDist) 
                     {
-                        v3LocalMaxSeparate = v3NInWorld * fDist;
+                        v3LocalMaxSeparateNormal = v3NInWorld;
                         fLocalMaxDist = fDist;
                     }
                 }
 
-                if (fLocalMaxDist < fRetMinDist) 
+                if (fLocalMaxDist < fRetMinDist)
                 {
-                    v3RetMinSeparate = v3LocalMaxSeparate;
+                    v3RetMinSeparateNormal = v3LocalMaxSeparateNormal;
                     fRetMinDist = fLocalMaxDist;
                 }
             }
-
-            return v3RetMinSeparate;
         }
     }
 }
