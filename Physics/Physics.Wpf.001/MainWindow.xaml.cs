@@ -119,7 +119,7 @@ namespace Physics.Wpf._001
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            int steps = 10;
+            int steps = 30;
             float step = dt / (float)steps;
 
             for (int i = 0; i < steps; i++) 
