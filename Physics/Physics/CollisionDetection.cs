@@ -60,16 +60,19 @@ namespace Physics
             }
 
             // points in other body
-            List<Vector3> listPoints2 = new List<Vector3>();
-            GetPointsInConvexMesh(rigidBody1, rigidBody2, ref listPoints2);
             List<Vector3> listPoints1 = new List<Vector3>();
-            GetPointsInConvexMesh(rigidBody2, rigidBody1, ref listPoints1);
+            GetPointsInConvexMesh(rigidBody1, rigidBody2, ref listPoints1);
+            List<Vector3> listPoints2 = new List<Vector3>();
+            GetPointsInConvexMesh(rigidBody2, rigidBody1, ref listPoints2);
 
             // separate
+            Vector3 v3Separate1 = SearchMinSeparate(rigidBody1, listPoints1);
+            Vector3 v3Separate2 = SearchMinSeparate(rigidBody2, listPoints2);
+
             listHits.Clear();
             ;
 
-            // calc hits
+            // create hits
             ;
 
             return true;
@@ -150,6 +153,7 @@ namespace Physics
             {
                 Vector3 v3PointInLocal = Vector4.Transform(new Vector4(v3Point, 1), m4FinalTransform).Xyz;
 
+                bool bIsIn = true;
                 int nId = 0;
                 for (int id = 0; id < rigidBody1.m_listIndices.Count; id += 3, nId++) 
                 {
@@ -158,10 +162,16 @@ namespace Physics
 
                     Vector3 v3Dir = (v3PointInLocal - v3AInLocal).Normalized();
 
-                    if (Vector3.CalculateAngle(v3NLocal, v3Dir) > ToRadian(90.0f)) 
+                    if (Vector3.CalculateAngle(v3NLocal, v3Dir) < ToRadian(90.0f)) 
                     {
-                        listPoints.Add(v3Point);
+                        bIsIn = false;
                     }
+                }
+
+                if (true == bIsIn) 
+                {
+                    Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz;
+                    listPoints.Add(v3PointInWorld);
                 }
             }
         }
@@ -169,6 +179,54 @@ namespace Physics
         private static float ToRadian(float fDegree)
         {
             return (fDegree / 180.0f * (float)Math.PI);
+        }
+
+        private static Vector3 SearchMinSeparate(RigidBody rigidBody, List<Vector3> listPoints) 
+        {
+            Vector3 v3RetMinSeparate = new Vector3();
+            float fRetMinDist = float.MaxValue;
+
+            if (0 == listPoints.Count()) 
+            {
+                return v3RetMinSeparate;
+            }
+
+            int nId = 0;
+            for (int id = 0; id < rigidBody.m_listIndices.Count; id += 3, nId++)
+            {
+                // plane pos
+                Vector3 v3A = rigidBody.m_listPoints[rigidBody.m_listIndices[id + 0]];
+                Vector3 v3AInWorld = Vector4.Transform(new Vector4(v3A, 1), rigidBody.m_m4World).Xyz;
+
+                // plane normal
+                Vector3 v3N = rigidBody.m_listTriangleNormals[nId];
+                Vector3 v3NInWorld = Vector4.Transform(new Vector4(v3N, 0), rigidBody.m_m4World).Xyz;
+                v3NInWorld.Normalize();
+
+                Plane plane = new Plane(v3AInWorld, v3NInWorld);
+
+                Vector3 v3LocalMaxSeparate = new Vector3();
+                float fLocalMaxDist = float.MinValue;
+
+                foreach (Vector3 v3PointInWorld in listPoints) 
+                {
+                    float fDist = Math.Abs( plane.GetDistance(v3PointInWorld) );
+
+                    if (fDist > fLocalMaxDist) 
+                    {
+                        v3LocalMaxSeparate = v3NInWorld * fDist;
+                        fLocalMaxDist = fDist;
+                    }
+                }
+
+                if (fLocalMaxDist < fRetMinDist) 
+                {
+                    v3RetMinSeparate = v3LocalMaxSeparate;
+                    fRetMinDist = fLocalMaxDist;
+                }
+            }
+
+            return v3RetMinSeparate;
         }
     }
 }
