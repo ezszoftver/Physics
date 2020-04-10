@@ -122,9 +122,9 @@ namespace Physics.Wpf._001
             {
                 rigidBody.Update(step);
                 List<Hit> listHits = new List<Hit>();
-                if (true == rigidBody.CollisionDetection(plane, listHits))
+                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody, plane, listHits))
                 {
-                    rigidBody.CollisionResponse(plane, listHits);
+                    Physics.CollisionResponse.Apply(rigidBody, listHits);
                 }
             }
 

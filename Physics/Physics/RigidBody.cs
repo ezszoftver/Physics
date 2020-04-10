@@ -58,28 +58,7 @@ namespace Physics
             m_m4World = Matrix4.Mult(m4RotXYZ, m4Translate);
         }
 
-        public bool CollisionDetection(Plane plane, List<Hit> listHits)
-        {
-            listHits.Clear();
-
-            foreach (Vector3 v3Point in m_listPoints) 
-            {
-                Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), m_m4World).Xyz;
-                float t = plane.GetDistance(v3PointInWorld);
-                if (t < 0.0f) 
-                {
-                    Hit hit = new Hit();
-
-                    hit.m_v3Normal = plane.m_v3Normal;
-                    hit.t = Math.Abs(t);
-                    hit.m_v3PositionInWorld = v3PointInWorld + (plane.m_v3Normal * Math.Abs(t));
-
-                    listHits.Add(hit);
-                }
-            }
-
-            return (listHits.Count() > 0);
-        }
+        
 
         public void CollisionResponse(Plane plane, List<Hit> listHits)
         {

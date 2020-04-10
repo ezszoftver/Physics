@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Physics", "Physics\Physics.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Physics.Wpf.001", "Physics.Wpf.001\Physics.Wpf.001.csproj", "{D4201A14-3034-4F53-A3AA-7933221FCF17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Physics.Wpf.002", "Physics.Wpf.002\Physics.Wpf.002.csproj", "{7F45391F-1566-4528-A6BE-002344DEE4EB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{04E2B724-35CB-4A97-970A-9A4353A7BBDF} = {04E2B724-35CB-4A97-970A-9A4353A7BBDF}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +26,10 @@ Global
 		{D4201A14-3034-4F53-A3AA-7933221FCF17}.Debug|x64.Build.0 = Debug|x64
 		{D4201A14-3034-4F53-A3AA-7933221FCF17}.Release|x64.ActiveCfg = Release|x64
 		{D4201A14-3034-4F53-A3AA-7933221FCF17}.Release|x64.Build.0 = Release|x64
+		{7F45391F-1566-4528-A6BE-002344DEE4EB}.Debug|x64.ActiveCfg = Debug|x64
+		{7F45391F-1566-4528-A6BE-002344DEE4EB}.Debug|x64.Build.0 = Debug|x64
+		{7F45391F-1566-4528-A6BE-002344DEE4EB}.Release|x64.ActiveCfg = Release|x64
+		{7F45391F-1566-4528-A6BE-002344DEE4EB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

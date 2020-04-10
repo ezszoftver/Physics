@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollisionDetection.cs" />
+    <Compile Include="CollisionResponse.cs" />
     <Compile Include="Hit.cs" />
     <Compile Include="Plane.cs" />
     <Compile Include="RigidBody.cs" />
