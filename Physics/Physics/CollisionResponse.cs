@@ -11,7 +11,7 @@ namespace Physics
 {
     public class CollisionResponse
     {
-        public static void Apply(RigidBody rigidBody, List<Hit> listHits)
+        public static void Apply(RigidBody rigidBody, List<Hit> listHits, Vector3 v3Separate)
         {
             foreach (Hit hit in listHits)
             {
@@ -32,12 +32,7 @@ namespace Physics
             }
 
             // separate
-            Hit hitMaxT = new Hit();
-            foreach (Hit currentHit in listHits)
-            {
-                if (currentHit.t > hitMaxT.t) { hitMaxT = currentHit; }
-            }
-            rigidBody.m_v3Position += hitMaxT.m_v3Normal * hitMaxT.t;
+            rigidBody.m_v3Position += v3Separate;
         }
     }
 }

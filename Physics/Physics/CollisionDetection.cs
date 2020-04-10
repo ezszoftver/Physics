@@ -11,7 +11,7 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, List<Hit> listHits)
+        public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits, ref Vector3 v3Separate)
         {
             listHits.Clear();
 
@@ -31,26 +31,41 @@ namespace Physics
                 }
             }
 
-            return (listHits.Count() > 0);
-        }
-
-        public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits) 
-        {
-            listHits.Clear();
-
-            if
-            (
-                true == CollisionDetectionAABB(rigidBody1, rigidBody2, listHits)
-             && true == CollisionDetectionAABB(rigidBody2, rigidBody1, listHits)
-            )
+            // separate
+            if (listHits.Count() > 0)
             {
+                Hit hitMaxT = new Hit();
+                foreach (Hit currentHit in listHits)
+                {
+                    if (currentHit.t > hitMaxT.t) { hitMaxT = currentHit; }
+                }
+                v3Separate = hitMaxT.m_v3Normal * hitMaxT.t;
+
                 return true;
             }
 
             return false;
         }
 
-        private static bool CollisionDetectionAABB(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits) 
+        public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits, ref Vector3 v3Separate) 
+        {
+            if
+            (
+                false == IsOverlapAABB(rigidBody1, rigidBody2)
+             || false == IsOverlapAABB(rigidBody2, rigidBody1)
+            )
+            {
+                return false;
+            }
+
+            listHits.Clear();
+            GetPointsInConvexMesh(rigidBody1, rigidBody2, listHits);
+            GetPointsInConvexMesh(rigidBody2, rigidBody1, listHits);
+
+            return true;
+        }
+
+        private static bool IsOverlapAABB(RigidBody rigidBody1, RigidBody rigidBody2) 
         {
 
             Matrix4 m4FinalTransform = Matrix4.Mult(rigidBody2.m_m4World, rigidBody1.m_m4World.Inverted());
@@ -113,6 +128,11 @@ namespace Physics
             if ((fZPart1 + fZPart2) > fFull) { bCollZ = true; }
 
             return (bCollX && bCollY && bCollZ);
+        }
+
+        private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits) 
+        {
+
         }
     }
 }

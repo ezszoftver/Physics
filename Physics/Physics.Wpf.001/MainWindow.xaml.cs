@@ -69,23 +69,25 @@ namespace Physics.Wpf._001
             rigidBody.m_listPoints.Add(new Vector3(+2.0f, +1.0f, +1.5f));
 
             // back
-            rigidBody.m_listIndices.AddRange(new int[] { 0, 1, 3 });
+            rigidBody.m_listIndices.AddRange(new int[] { 3, 1, 0 });
             rigidBody.m_listIndices.AddRange(new int[] { 0, 2, 3 });
             // front
             rigidBody.m_listIndices.AddRange(new int[] { 4, 5, 7 });
-            rigidBody.m_listIndices.AddRange(new int[] { 4, 6, 7 });
+            rigidBody.m_listIndices.AddRange(new int[] { 7, 6, 4 });
             // left
-            rigidBody.m_listIndices.AddRange(new int[] { 0, 2, 6 });
+            rigidBody.m_listIndices.AddRange(new int[] { 6, 2, 0 });
             rigidBody.m_listIndices.AddRange(new int[] { 0, 4, 6 });
             // right
             rigidBody.m_listIndices.AddRange(new int[] { 1, 3, 7 });
-            rigidBody.m_listIndices.AddRange(new int[] { 1, 5, 7 });
+            rigidBody.m_listIndices.AddRange(new int[] { 7, 5, 1 });
             // bottom
             rigidBody.m_listIndices.AddRange(new int[] { 0, 1, 5 });
-            rigidBody.m_listIndices.AddRange(new int[] { 0, 4, 5 });
+            rigidBody.m_listIndices.AddRange(new int[] { 5, 4, 0 });
             // top
-            rigidBody.m_listIndices.AddRange(new int[] { 2, 3, 7 });
+            rigidBody.m_listIndices.AddRange(new int[] { 7, 3, 2 });
             rigidBody.m_listIndices.AddRange(new int[] { 2, 6, 7 });
+
+            rigidBody.CalculateNormals();
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Tick += Timer_Tick;
@@ -121,10 +123,12 @@ namespace Physics.Wpf._001
             for (int i = 0; i < steps; i++) 
             {
                 rigidBody.Update(step);
+
+                Vector3 v3Separate = new Vector3();
                 List<Hit> listHits = new List<Hit>();
-                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody, plane, listHits))
+                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody, plane, ref listHits, ref v3Separate))
                 {
-                    Physics.CollisionResponse.Apply(rigidBody, listHits);
+                    Physics.CollisionResponse.Apply(rigidBody, listHits, v3Separate);
                 }
             }
 

@@ -56,7 +56,7 @@ namespace Physics.Wpf._002
 
             rigidBody1.m_fMass = 1.0f;
             rigidBody1.m_v3Position = new Vector3(0, 1.0f, 0);
-            rigidBody1.m_fGravity = new Vector3(0, -9.81f, 0);
+            rigidBody1.m_fGravity = new Vector3(0, -1.0f, 0);
             rigidBody1.m_fRestitution = 0.5f;
             rigidBody1.m_v3Rotate = new Vector3(ToRadian(0.0f), 0, ToRadian(0.0f));
 
@@ -70,23 +70,25 @@ namespace Physics.Wpf._002
             rigidBody1.m_listPoints.Add(new Vector3(+2.0f, +1.0f, +1.5f));
 
             // back
-            rigidBody1.m_listIndices.AddRange(new int[] { 0, 1, 3 });
+            rigidBody1.m_listIndices.AddRange(new int[] { 3, 1, 0 });
             rigidBody1.m_listIndices.AddRange(new int[] { 0, 2, 3 });
             // front
             rigidBody1.m_listIndices.AddRange(new int[] { 4, 5, 7 });
-            rigidBody1.m_listIndices.AddRange(new int[] { 4, 6, 7 });
+            rigidBody1.m_listIndices.AddRange(new int[] { 7, 6, 4 });
             // left
-            rigidBody1.m_listIndices.AddRange(new int[] { 0, 2, 6 });
+            rigidBody1.m_listIndices.AddRange(new int[] { 6, 2, 0 });
             rigidBody1.m_listIndices.AddRange(new int[] { 0, 4, 6 });
             // right
             rigidBody1.m_listIndices.AddRange(new int[] { 1, 3, 7 });
-            rigidBody1.m_listIndices.AddRange(new int[] { 1, 5, 7 });
+            rigidBody1.m_listIndices.AddRange(new int[] { 7, 5, 1 });
             // bottom
             rigidBody1.m_listIndices.AddRange(new int[] { 0, 1, 5 });
-            rigidBody1.m_listIndices.AddRange(new int[] { 0, 4, 5 });
+            rigidBody1.m_listIndices.AddRange(new int[] { 5, 4, 0 });
             // top
-            rigidBody1.m_listIndices.AddRange(new int[] { 2, 3, 7 });
+            rigidBody1.m_listIndices.AddRange(new int[] { 7, 3, 2 });
             rigidBody1.m_listIndices.AddRange(new int[] { 2, 6, 7 });
+
+            rigidBody1.CalculateNormals();
 
             ;
 
@@ -94,7 +96,7 @@ namespace Physics.Wpf._002
 
             rigidBody2.m_fMass = 1.0f;
             rigidBody2.m_v3Position = new Vector3(0, 6.0f, 0);
-            rigidBody2.m_fGravity = new Vector3(0, -9.81f, 0);
+            rigidBody2.m_fGravity = new Vector3(0, -1.0f, 0);
             rigidBody2.m_fRestitution = 0.5f;
             rigidBody2.m_v3Rotate = new Vector3(ToRadian(30.0f), 0, ToRadian(20.0f));
 
@@ -108,23 +110,25 @@ namespace Physics.Wpf._002
             rigidBody2.m_listPoints.Add(new Vector3(+2.0f, +1.0f, +1.5f));
 
             // back
-            rigidBody2.m_listIndices.AddRange(new int[] { 0, 1, 3 });
+            rigidBody2.m_listIndices.AddRange(new int[] { 3, 1, 0 });
             rigidBody2.m_listIndices.AddRange(new int[] { 0, 2, 3 });
             // front
             rigidBody2.m_listIndices.AddRange(new int[] { 4, 5, 7 });
-            rigidBody2.m_listIndices.AddRange(new int[] { 4, 6, 7 });
+            rigidBody2.m_listIndices.AddRange(new int[] { 7, 6, 4 });
             // left
-            rigidBody2.m_listIndices.AddRange(new int[] { 0, 2, 6 });
+            rigidBody2.m_listIndices.AddRange(new int[] { 6, 2, 0 });
             rigidBody2.m_listIndices.AddRange(new int[] { 0, 4, 6 });
             // right
             rigidBody2.m_listIndices.AddRange(new int[] { 1, 3, 7 });
-            rigidBody2.m_listIndices.AddRange(new int[] { 1, 5, 7 });
+            rigidBody2.m_listIndices.AddRange(new int[] { 7, 5, 1 });
             // bottom
             rigidBody2.m_listIndices.AddRange(new int[] { 0, 1, 5 });
-            rigidBody2.m_listIndices.AddRange(new int[] { 0, 4, 5 });
+            rigidBody2.m_listIndices.AddRange(new int[] { 5, 4, 0 });
             // top
-            rigidBody2.m_listIndices.AddRange(new int[] { 2, 3, 7 });
+            rigidBody2.m_listIndices.AddRange(new int[] { 7, 3, 2 });
             rigidBody2.m_listIndices.AddRange(new int[] { 2, 6, 7 });
+
+            rigidBody2.CalculateNormals();
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Tick += Timer_Tick; ;
@@ -162,20 +166,21 @@ namespace Physics.Wpf._002
                 rigidBody1.Update(step);
                 rigidBody2.Update(step);
 
+                Vector3 v3Separate = new Vector3();
                 List<Hit> listHits = new List<Hit>();
-                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody1, plane, listHits))
+                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody1, plane, ref listHits, ref v3Separate))
                 {
-                    Physics.CollisionResponse.Apply(rigidBody1, listHits);
+                    Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate);
                 }
 
                 listHits.Clear();
-                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody2, plane, listHits))
+                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody2, plane, ref listHits, ref v3Separate))
                 {
-                    Physics.CollisionResponse.Apply(rigidBody2, listHits);
+                    Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate);
                 }
 
                 listHits.Clear();
-                if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, listHits)) 
+                if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits, ref v3Separate)) 
                 {
                     ;
                 }
