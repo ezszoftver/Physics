@@ -11,7 +11,7 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static int step = 10;
+        public static int step = 2;
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits, ref Vector3 v3Separate)
         {
@@ -35,7 +35,7 @@ namespace Physics
 
                             hit.m_v3Normal = plane.m_v3Normal;
 							hit.t = Math.Abs(dist);
-                            hit.m_v3PositionInWorld = v3PointInWorld;
+                            hit.m_v3PositionInWorld = v3PointInWorld - (hit.m_v3Normal * hit.t);
 
                             listHits.Add(hit);
                         }
@@ -85,9 +85,9 @@ namespace Physics
             foreach (Vector3 v3PosInWorld in listPoints) 
             {
                 Hit hit = new Hit();
-                hit.m_v3PositionInWorld = v3PosInWorld;
                 hit.m_v3Normal = v3Normal1;
 				hit.t = t1;
+                hit.m_v3PositionInWorld = v3PosInWorld - (hit.m_v3Normal * hit.t);
 
                 listHits2.Add(hit);
             }
@@ -95,9 +95,10 @@ namespace Physics
             foreach (Vector3 v3PosInWorld in listPoints)
             {
                 Hit hit = new Hit();
-                hit.m_v3PositionInWorld = v3PosInWorld;
                 hit.m_v3Normal = v3Normal1;
             	hit.t = t1;
+                hit.m_v3PositionInWorld = v3PosInWorld - (hit.m_v3Normal * hit.t);
+
                 listHits2.Add(hit);
             }
 
@@ -218,9 +219,9 @@ namespace Physics
 
         public static void DrawHits(List<Hit> listHits) 
         {
-            GL.PointSize(5);
+            GL.PointSize(4);
             GL.Begin(PrimitiveType.Points);
-            GL.Color3(1, 0, 0);
+            GL.Color3(1.0f, 1.0f, 1.0f);
             foreach (Hit hit in listHits) 
             {
                 GL.Vertex3(hit.m_v3PositionInWorld);
@@ -228,9 +229,9 @@ namespace Physics
             GL.End();
             GL.PointSize(1);
 
-            GL.LineWidth(4);
+            GL.LineWidth(2);
             GL.Begin(PrimitiveType.Lines);
-            GL.Color3(1, 0, 0);
+            GL.Color3(1.0f, 1.0f, 1.0f);
             foreach (Hit hit in listHits)
             {
                 GL.Vertex3(hit.m_v3PositionInWorld);

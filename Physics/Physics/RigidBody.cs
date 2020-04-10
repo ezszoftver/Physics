@@ -31,6 +31,9 @@ namespace Physics
 
         public Matrix4 m_m4World = Matrix4.Identity;
 
+        public float m_fLinearDamping = 1.0f;
+        public float m_fAngularDamping = 1.0f;
+
         public float m_fDeltaTime = 0.0f;
 
         public static float ToRadian(float fDegree)
@@ -45,11 +48,13 @@ namespace Physics
 
             m_v3LinearAcceleration = m_fGravity + (m_v3Force / m_fMass);
             m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
+            m_v3LinearVelocity -= m_v3LinearVelocity * (1.0f - m_fLinearDamping) * m_fDeltaTime;
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
             Matrix4 m4Translate = Matrix4.CreateTranslation(m_v3Position);
 
             m_v3AngularAcceleration = m_v3Torque / m_fMass;
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
+            m_v3AngularVelocity -= m_v3AngularVelocity * (1.0f - m_fAngularDamping) * m_fDeltaTime;
             m_v3Rotate += m_v3AngularVelocity * m_fDeltaTime;
             
             Matrix4 m4RotX = Matrix4.CreateRotationX(m_v3Rotate.X);
@@ -80,14 +85,26 @@ namespace Physics
             }
         }
 
+        
+
         public void Draw() 
         {
+            Vector3 v3LightDir = new Vector3(-0.5f, -1.0f, -0.5f).Normalized();
+
             // vertices
             GL.Begin(PrimitiveType.Triangles);
             {
-                GL.Color3(1.0f, 0.0f, 0.0f);
-                for (int id = 0; id < m_listIndices.Count; id += 3) 
+                int nId = 0;
+                for (int id = 0; id < m_listIndices.Count; id += 3, nId++) 
                 {
+                    // N
+                    Vector3 v3N = m_listTriangleNormals[nId];
+                    Vector3 v3NInWorld = Vector4.Transform(new Vector4(v3N, 0), m_m4World).Xyz;
+                    v3NInWorld.Normalize();
+
+                    float fIntensity = Math.Max(0.0f, Vector3.Dot(-v3LightDir, v3NInWorld));
+                    GL.Color4(1.0f * fIntensity, 0.0f, 0.0f, 1.0f);
+
                     // A
                     Vector3 v3PA = m_listPoints[ m_listIndices[id + 0] ];
                     Vector3 v3PAInWorld = Vector4.Transform(new Vector4(v3PA, 1), m_m4World).Xyz;

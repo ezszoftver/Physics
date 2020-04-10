@@ -45,9 +45,11 @@ namespace Physics.Wpf._001
         private void glControl_Load(object sender, EventArgs e)
         {
             glControl.MakeCurrent();
+            GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Lighting);
             GL.Disable(EnableCap.Texture2D);
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            GL.Disable(EnableCap.CullFace);
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.ClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 
             plane = new Physics.Plane(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 1, 0));
@@ -117,7 +119,7 @@ namespace Physics.Wpf._001
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            int steps = 20;
+            int steps = 10;
             float step = dt / (float)steps;
 
             for (int i = 0; i < steps; i++) 
