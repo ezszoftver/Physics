@@ -57,13 +57,15 @@ namespace Physics.Wpf._002
             plane = new Physics.Plane(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 1, 0));
             rigidBody1 = new RigidBody();
 
+            Vector3 v3Gravity = new Vector3(0, -9.81f, 0);
+
             rigidBody1.m_fMass = 1.0f;
             rigidBody1.m_v3Position = new Vector3(0f, 4.0f, 0);
-            rigidBody1.m_fGravity = new Vector3(0, -1.0f, 0);
+            rigidBody1.m_fGravity = v3Gravity;
             rigidBody1.m_fRestitution = 0.1f;
             rigidBody1.m_v3Rotate = new Vector3(ToRadian(10.0f), 0, ToRadian(20.0f));
-            rigidBody1.m_fLinearDamping = 0.5f;
-            rigidBody1.m_fAngularDamping = 0.5f;
+            rigidBody1.m_fLinearDamping = 0.01f;
+            rigidBody1.m_fAngularDamping = 0.01f;
 
             rigidBody1.m_listPoints.Add(new Vector3(-2.0f, -1.0f, -1.5f));
             rigidBody1.m_listPoints.Add(new Vector3(+2.0f, -1.0f, -1.5f));
@@ -101,11 +103,11 @@ namespace Physics.Wpf._002
 
             rigidBody2.m_fMass = 1.0f;
             rigidBody2.m_v3Position = new Vector3(3.0f, 8.0f, 0);
-            rigidBody2.m_fGravity = new Vector3(0, -1.0f, 0);
+            rigidBody2.m_fGravity = v3Gravity;
             rigidBody2.m_fRestitution = 0.1f;
             rigidBody2.m_v3Rotate = new Vector3(ToRadian(10.0f), ToRadian(75.0f), ToRadian(20.0f));
-            rigidBody2.m_fLinearDamping = 0.5f;
-            rigidBody2.m_fAngularDamping = 0.5f;
+            rigidBody2.m_fLinearDamping = 0.01f;
+            rigidBody2.m_fAngularDamping = 0.01f;
 
             rigidBody2.m_listPoints.Add(new Vector3(-2.0f, -1.0f, -1.5f));
             rigidBody2.m_listPoints.Add(new Vector3(+2.0f, -1.0f, -1.5f));
@@ -143,11 +145,11 @@ namespace Physics.Wpf._002
 
             rigidBody3.m_fMass = 1.0f;
             rigidBody3.m_v3Position = new Vector3(0f, 15.0f, 0);
-            rigidBody3.m_fGravity = new Vector3(0, -1.0f, 0);
+            rigidBody3.m_fGravity = v3Gravity;
             rigidBody3.m_fRestitution = 0.1f;
             rigidBody3.m_v3Rotate = new Vector3(ToRadian(0.0f), ToRadian(0.0f), ToRadian(0.0f));
-            rigidBody3.m_fLinearDamping = 0.5f;
-            rigidBody3.m_fAngularDamping = 0.5f;
+            rigidBody3.m_fLinearDamping = 0.01f;
+            rigidBody3.m_fAngularDamping = 0.01f;
 
             rigidBody3.m_listPoints.Add(new Vector3(-3.0f, -1.5f, -2.5f));
             rigidBody3.m_listPoints.Add(new Vector3(+3.0f, -1.5f, -2.5f));
@@ -207,7 +209,7 @@ namespace Physics.Wpf._002
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            int steps = 30;
+            int steps = 20;
             float step = dt / (float)steps;
 
             for (int i = 0; i < steps; i++)
@@ -245,12 +247,12 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits, ref v3Separate)) 
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody2, rigidBody1, listHits, v3Separate);
 
-                    Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
-
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate);
+                    //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
+                    //
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    //Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate);
                 }
 
                 v3Separate = new Vector3();
@@ -258,12 +260,12 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody2, rigidBody3, ref listHits, ref v3Separate))
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody3, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody3, rigidBody2, listHits, v3Separate);
 
-                    Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
-
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate);
+                    //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
+                    //
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    //Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate);
                 }
 
                 v3Separate = new Vector3();
@@ -271,12 +273,12 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody3, rigidBody1, ref listHits, ref v3Separate))
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody1, rigidBody3, listHits, v3Separate);
 
-                    Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
-
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody3, listHits, v3Separate);
+                    //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
+                    //
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    //Physics.CollisionResponse.Apply(rigidBody3, listHits, v3Separate);
                 }
             }
 

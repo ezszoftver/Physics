@@ -11,7 +11,7 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static int step = 2;
+        public static int step = 20;
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits, ref Vector3 v3Separate)
         {
@@ -143,6 +143,8 @@ namespace Physics
                 v3RigidBody2Max.Z = (v3Point2.Z > v3RigidBody2Max.Z) ? (v3Point2.Z) : (v3RigidBody2Max.Z);
             }
 
+            float margin = 0.02f;
+
             // X
             bool bCollX = false;
             float fXMin = Math.Min(v3RigidBody1Min.X, v3RigidBody2Min.X);
@@ -150,7 +152,7 @@ namespace Physics
             float fFull = fXMax - fXMin;
             float fXPart1 = v3RigidBody1Max.X - v3RigidBody1Min.X;
             float fXPart2 = v3RigidBody2Max.X - v3RigidBody2Min.X;
-            if ( (fXPart1 + fXPart2) > fFull ) { bCollX = true; }
+            if ( (fXPart1 + fXPart2 + margin) > fFull ) { bCollX = true; }
 
             // Y
             bool bCollY = false;
@@ -159,7 +161,7 @@ namespace Physics
             fFull = fYMax - fYMin;
             float fYPart1 = v3RigidBody1Max.Y - v3RigidBody1Min.Y;
             float fYPart2 = v3RigidBody2Max.Y - v3RigidBody2Min.Y;
-            if ((fYPart1 + fYPart2) > fFull) { bCollY = true; }
+            if ((fYPart1 + fYPart2 + margin) > fFull) { bCollY = true; }
 
             // Z
             bool bCollZ = false;
@@ -168,7 +170,7 @@ namespace Physics
             fFull = fZMax - fZMin;
             float fZPart1 = v3RigidBody1Max.Z - v3RigidBody1Min.Z;
             float fZPart2 = v3RigidBody2Max.Z - v3RigidBody2Min.Z;
-            if ((fZPart1 + fZPart2) > fFull) { bCollZ = true; }
+            if ((fZPart1 + fZPart2 + margin) > fFull) { bCollZ = true; }
 
             return (bCollX && bCollY && bCollZ);
         }
@@ -182,7 +184,7 @@ namespace Physics
                 Vector3 v3Start = rigidBody2.m_listPoints[rigidBody2.m_listIndices[id + 0]];
                 Vector3 v3End = rigidBody2.m_listPoints[rigidBody2.m_listIndices[id + 1]];
 
-                float margin = 0.01f;
+                float margin = 0.02f;
                 
                 for (int i = 0; i <= step; i++)
                 {
@@ -201,7 +203,7 @@ namespace Physics
                         Plane plane = new Plane(v3AInLocal + (v3NLocal * margin), v3NLocal);
                         float dist = plane.GetDistance(v3PointInLocal);
 
-                        if (dist > 0.0f)
+                        if (dist > margin)
                         {
                             bIsIn = false;
                         }
