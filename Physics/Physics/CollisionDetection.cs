@@ -11,8 +11,8 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static int step = 30;
-        public static float margin = 0.05f;
+        public static int step = 4;
+        public static float margin = 0.01f;
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits, ref Vector3 v3Separate)
         {
@@ -92,17 +92,6 @@ namespace Physics
 
                 listHits2.Add(hit);
             }
-
-            foreach (Vector3 v3PosInWorld in listPoints)
-            {
-                Hit hit = new Hit();
-                hit.m_v3Normal = v3Normal1;
-            	hit.t = t1;
-                hit.m_v3PositionInWorld = v3PosInWorld - (hit.m_v3Normal * hit.t);
-
-                listHits2.Add(hit);
-            }
-
 
             v3Separate2 = v3Normal1 * t1;
 

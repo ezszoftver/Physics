@@ -13,6 +13,8 @@ namespace Physics
     {
         public static void Apply(RigidBody rigidBody, List<Hit> listHits, Vector3 v3Separate, float dt)
         {
+            float fPlaneMass = rigidBody.m_fMass * 1000.0f;
+
             foreach (Hit hit in listHits)
             {
                 Vector3 rA = hit.m_v3PositionInWorld - rigidBody.m_v3Position;
@@ -22,27 +24,31 @@ namespace Physics
 
                 float nominator = -(1.0f + rigidBody.m_fRestitution) * fRelVelocity;
                 float term1 = 1.0f / rigidBody.m_fMass;
-                float term2 = 0.0f;
+                float term2 = 1.0f / fPlaneMass;
                 float term3 = Vector3.Dot(hit.m_v3Normal, Vector3.Cross(Vector3.Cross(rA, hit.m_v3Normal), rA));
-                float term4 = 0.0f;
+                float term4 = 0.001f;
                 float J = nominator / (term1 + term2 + term3 + term4);
 
                 rigidBody.m_v3LinearVelocity += (J / rigidBody.m_fMass) * hit.m_v3Normal;
                 rigidBody.m_v3AngularVelocity += (J / rigidBody.m_fMass) * Vector3.Cross(rA, hit.m_v3Normal);
+
+                // separate
+                Vector3 v3Force = hit.m_v3Normal * 0.5f / rigidBody.m_fGravity.Length;
+
+                rigidBody.m_v3LinearVelocity += v3Force;
+
+                rigidBody.m_v3AngularVelocity += Vector3.Cross(rA, v3Force);
+
+                //rigidBody.m_v3Position += v3Force * dt * dt;
             }
 
-            // separate
-            rigidBody.m_v3LinearAcceleration += v3Separate;
-            //rigidBody.m_v3LinearVelocity += dt * rigidBody.m_v3LinearAcceleration;
-
-            rigidBody.m_v3AngularAcceleration += v3Separate;
-            //rigidBody.m_v3AngularVelocity += dt * rigidBody.m_v3AngularAcceleration;
-
-            rigidBody.m_v3Position += v3Separate;
+            //rigidBody.m_v3Position += v3Separate;
         }
 
         public static void Apply(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits, Vector3 v3Separate, float dt)
         {
+            
+
             foreach (Hit hit in listHits)
             {
                 Vector3 rA = hit.m_v3PositionInWorld - rigidBody1.m_v3Position;
@@ -63,33 +69,22 @@ namespace Physics
 
                 rigidBody2.m_v3LinearVelocity -= (J / rigidBody2.m_fMass) * hit.m_v3Normal;
                 rigidBody2.m_v3AngularVelocity -= (J / rigidBody2.m_fMass) * Vector3.Cross(rB, hit.m_v3Normal);
+
+                // separate
+                Vector3 v3Force = hit.m_v3Normal * 1.0f / rigidBody1.m_fGravity.Length;
+
+                rigidBody1.m_v3LinearVelocity += v3Force;
+                rigidBody2.m_v3LinearVelocity -= v3Force;
+
+                rigidBody1.m_v3AngularVelocity += Vector3.Cross(rA, v3Force);
+                rigidBody2.m_v3AngularVelocity -= Vector3.Cross(rB, v3Force);
+
+                //rigidBody1.m_v3Position += v3Force * dt * dt;
+                //rigidBody2.m_v3Position -= v3Force * dt * dt;
             }
 
-            // separate
-            rigidBody1.m_v3LinearAcceleration += v3Separate * (rigidBody2.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
-            rigidBody2.m_v3LinearAcceleration -= v3Separate * (rigidBody1.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
-
-            //rigidBody1.m_v3LinearVelocity += dt * rigidBody1.m_v3LinearAcceleration;
-            //rigidBody2.m_v3LinearVelocity -= dt * rigidBody2.m_v3LinearAcceleration;
-
-            rigidBody1.m_v3AngularAcceleration += v3Separate * (rigidBody2.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
-            rigidBody2.m_v3AngularAcceleration -= v3Separate * (rigidBody1.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
-
-            //rigidBody1.m_v3AngularVelocity += dt * rigidBody1.m_v3AngularAcceleration;
-            //rigidBody2.m_v3AngularVelocity -= dt * rigidBody2.m_v3AngularAcceleration;
-
-            rigidBody1.m_v3Position += v3Separate * 0.5f;
-            rigidBody2.m_v3Position -= v3Separate * 0.5f;
-        }
-
-
-        public static void Invert(ref List<Hit> listHits, ref Vector3 v3Separate) 
-        {
-			v3Separate *= -1.0f;
-            foreach (Hit hit in listHits) 
-            {
-                hit.m_v3Normal *= -1.0f;
-            }
+            //rigidBody1.m_v3Position += v3Separate;
+            //rigidBody2.m_v3Position -= v3Separate;
         }
     }
 }

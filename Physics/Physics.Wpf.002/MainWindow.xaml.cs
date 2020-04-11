@@ -209,7 +209,7 @@ namespace Physics.Wpf._002
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            int steps = 20;
+            int steps = 10;
             float step = dt / (float)steps;
 
             for (int i = 0; i < steps; i++)
@@ -248,11 +248,6 @@ namespace Physics.Wpf._002
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
                     Physics.CollisionResponse.Apply(rigidBody2, rigidBody1, listHits, v3Separate, dt);
-
-                    //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
-                    //
-                    //Physics.CollisionDetection.DrawHits(listHits);
-                    //Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate);
                 }
 
                 v3Separate = new Vector3();
@@ -261,11 +256,6 @@ namespace Physics.Wpf._002
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
                     Physics.CollisionResponse.Apply(rigidBody3, rigidBody2, listHits, v3Separate, dt);
-
-                    //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
-                    //
-                    //Physics.CollisionDetection.DrawHits(listHits);
-                    //Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate);
                 }
 
                 v3Separate = new Vector3();
@@ -274,11 +264,6 @@ namespace Physics.Wpf._002
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
                     Physics.CollisionResponse.Apply(rigidBody1, rigidBody3, listHits, v3Separate, dt);
-
-                    //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
-                    //
-                    //Physics.CollisionDetection.DrawHits(listHits);
-                    //Physics.CollisionResponse.Apply(rigidBody3, listHits, v3Separate);
                 }
             }
 
