@@ -13,7 +13,7 @@ namespace Physics
     {
         public static void Apply(RigidBody rigidBody, List<Hit> listHits, Vector3 v3Separate, float dt)
         {
-            //rigidBody.m_v3Position -= rigidBody.m_v3LinearVelocity * dt * 0.025f;
+            //rigidBody.m_v3Position -= rigidBody.m_v3LinearVelocity * dt;
 
             foreach (Hit hit in listHits)
             {
@@ -33,13 +33,13 @@ namespace Physics
                 rigidBody.m_v3AngularVelocity += (J / rigidBody.m_fMass) * Vector3.Cross(rA, hit.m_v3Normal);
 
                 // separate
-                Vector3 v3Force = hit.m_v3Normal * 0.2f;
-
+                Vector3 v3Force = hit.m_v3Normal * 2.0f;
+                //
                 rigidBody.m_v3LinearVelocity += v3Force * dt;
-
+                //
                 rigidBody.m_v3AngularVelocity += Vector3.Cross(rA, v3Force) * dt;
-
-                rigidBody.m_v3Position += 0.01f * v3Force * dt * dt;
+                //
+                rigidBody.m_v3Position += 1.0f * v3Force * dt * dt;
             }
 
             //rigidBody.m_v3Position += v3Separate;
@@ -47,8 +47,8 @@ namespace Physics
 
         public static void Apply(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits, Vector3 v3Separate, float dt)
         {
-            //rigidBody1.m_v3Position -= rigidBody1.m_v3LinearVelocity * dt * 0.025f;
-            //rigidBody2.m_v3Position -= rigidBody2.m_v3LinearVelocity * dt * 0.025f;
+            //rigidBody1.m_v3Position -= rigidBody1.m_v3LinearVelocity * dt;
+            //rigidBody2.m_v3Position -= rigidBody2.m_v3LinearVelocity * dt;
 
             foreach (Hit hit in listHits)
             {
@@ -72,16 +72,16 @@ namespace Physics
                 rigidBody2.m_v3AngularVelocity -= (J / rigidBody2.m_fMass) * Vector3.Cross(rB, hit.m_v3Normal);
 
                 // separate
-                Vector3 v3Force = hit.m_v3Normal * 0.2f;
-                
+                Vector3 v3Force = hit.m_v3Normal * 2.0f;
+                //
                 rigidBody1.m_v3LinearVelocity += v3Force * dt;
                 rigidBody2.m_v3LinearVelocity -= v3Force * dt;
-                
+                //
                 rigidBody1.m_v3AngularVelocity += Vector3.Cross(rA, v3Force) * dt;
                 rigidBody2.m_v3AngularVelocity -= Vector3.Cross(rB, v3Force) * dt;
-                
-                rigidBody1.m_v3Position += 0.01f * v3Force * dt * dt;
-                rigidBody2.m_v3Position -= 0.01f * v3Force * dt * dt;
+                //
+                rigidBody1.m_v3Position += 1.0f * v3Force * dt * dt;
+                rigidBody2.m_v3Position -= 1.0f * v3Force * dt * dt;
             }
 
             //rigidBody1.m_v3Position += v3Separate;

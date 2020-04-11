@@ -209,7 +209,7 @@ namespace Physics.Wpf._002
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            int steps = 50;
+            int steps = 20;
             float step = dt / (float)steps;
 
             for (int i = 0; i < steps; i++)
@@ -222,48 +222,48 @@ namespace Physics.Wpf._002
                 List<Hit> listHits = new List<Hit>();
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody1, plane, ref listHits, ref v3Separate))
                 {
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate, dt);
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate, step);
                 }
 
 				v3Separate = new Vector3();
                 listHits = new List<Hit>();
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody2, plane, ref listHits, ref v3Separate))
                 {
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate, dt);
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate, step);
                 }
 
                 v3Separate = new Vector3();
                 listHits = new List<Hit>();
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody3, plane, ref listHits, ref v3Separate))
                 {
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody3, listHits, v3Separate, dt);
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    Physics.CollisionResponse.Apply(rigidBody3, listHits, v3Separate, step);
                 }
 
                 v3Separate = new Vector3();
                 listHits = new List<Hit>();
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits, ref v3Separate)) 
                 {
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody2, rigidBody1, listHits, v3Separate, dt);
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    Physics.CollisionResponse.Apply(rigidBody2, rigidBody1, listHits, v3Separate, step);
                 }
 
                 v3Separate = new Vector3();
                 listHits = new List<Hit>();
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody2, rigidBody3, ref listHits, ref v3Separate))
                 {
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody3, rigidBody2, listHits, v3Separate, dt);
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    Physics.CollisionResponse.Apply(rigidBody3, rigidBody2, listHits, v3Separate, step);
                 }
 
                 v3Separate = new Vector3();
                 listHits = new List<Hit>();
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody3, rigidBody1, ref listHits, ref v3Separate))
                 {
-                    Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody1, rigidBody3, listHits, v3Separate, dt);
+                    //Physics.CollisionDetection.DrawHits(listHits);
+                    Physics.CollisionResponse.Apply(rigidBody1, rigidBody3, listHits, v3Separate, step);
                 }
             }
 
