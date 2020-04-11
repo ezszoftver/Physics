@@ -223,7 +223,7 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody1, plane, ref listHits, ref v3Separate))
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody1, listHits, v3Separate, dt);
                 }
 
 				v3Separate = new Vector3();
@@ -231,7 +231,7 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody2, plane, ref listHits, ref v3Separate))
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate, dt);
                 }
 
                 v3Separate = new Vector3();
@@ -239,7 +239,7 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody3, plane, ref listHits, ref v3Separate))
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody3, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody3, listHits, v3Separate, dt);
                 }
 
                 v3Separate = new Vector3();
@@ -247,7 +247,7 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits, ref v3Separate)) 
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody2, rigidBody1, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody2, rigidBody1, listHits, v3Separate, dt);
 
                     //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
                     //
@@ -260,7 +260,7 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody2, rigidBody3, ref listHits, ref v3Separate))
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody3, rigidBody2, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody3, rigidBody2, listHits, v3Separate, dt);
 
                     //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
                     //
@@ -273,7 +273,7 @@ namespace Physics.Wpf._002
                 if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody3, rigidBody1, ref listHits, ref v3Separate))
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody1, rigidBody3, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody1, rigidBody3, listHits, v3Separate, dt);
 
                     //Physics.CollisionResponse.Invert(ref listHits, ref v3Separate);
                     //

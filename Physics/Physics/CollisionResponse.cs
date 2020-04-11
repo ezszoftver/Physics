@@ -11,7 +11,7 @@ namespace Physics
 {
     public class CollisionResponse
     {
-        public static void Apply(RigidBody rigidBody, List<Hit> listHits, Vector3 v3Separate)
+        public static void Apply(RigidBody rigidBody, List<Hit> listHits, Vector3 v3Separate, float dt)
         {
             foreach (Hit hit in listHits)
             {
@@ -33,13 +33,15 @@ namespace Physics
 
             // separate
             rigidBody.m_v3LinearAcceleration += v3Separate;
+            //rigidBody.m_v3LinearVelocity += dt * rigidBody.m_v3LinearAcceleration;
 
             rigidBody.m_v3AngularAcceleration += v3Separate;
+            //rigidBody.m_v3AngularVelocity += dt * rigidBody.m_v3AngularAcceleration;
 
             rigidBody.m_v3Position += v3Separate;
         }
 
-        public static void Apply(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits, Vector3 v3Separate)
+        public static void Apply(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits, Vector3 v3Separate, float dt)
         {
             foreach (Hit hit in listHits)
             {
@@ -67,11 +69,17 @@ namespace Physics
             rigidBody1.m_v3LinearAcceleration += v3Separate * (rigidBody2.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
             rigidBody2.m_v3LinearAcceleration -= v3Separate * (rigidBody1.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
 
+            //rigidBody1.m_v3LinearVelocity += dt * rigidBody1.m_v3LinearAcceleration;
+            //rigidBody2.m_v3LinearVelocity -= dt * rigidBody2.m_v3LinearAcceleration;
+
             rigidBody1.m_v3AngularAcceleration += v3Separate * (rigidBody2.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
             rigidBody2.m_v3AngularAcceleration -= v3Separate * (rigidBody1.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
 
-            rigidBody1.m_v3Position += v3Separate * (rigidBody2.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
-            rigidBody2.m_v3Position -= v3Separate * (rigidBody1.m_fMass / (rigidBody1.m_fMass + rigidBody2.m_fMass));
+            //rigidBody1.m_v3AngularVelocity += dt * rigidBody1.m_v3AngularAcceleration;
+            //rigidBody2.m_v3AngularVelocity -= dt * rigidBody2.m_v3AngularAcceleration;
+
+            rigidBody1.m_v3Position += v3Separate * 0.5f;
+            rigidBody2.m_v3Position -= v3Separate * 0.5f;
         }
 
 

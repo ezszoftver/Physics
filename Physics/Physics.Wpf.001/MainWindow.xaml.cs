@@ -131,7 +131,7 @@ namespace Physics.Wpf._001
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody, plane, ref listHits, ref v3Separate))
                 {
                     Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody, listHits, v3Separate);
+                    Physics.CollisionResponse.Apply(rigidBody, listHits, v3Separate, dt);
                 }
             }
 

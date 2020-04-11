@@ -11,7 +11,8 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static int step = 20;
+        public static int step = 30;
+        public static float margin = 0.05f;
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits, ref Vector3 v3Separate)
         {
@@ -143,7 +144,7 @@ namespace Physics
                 v3RigidBody2Max.Z = (v3Point2.Z > v3RigidBody2Max.Z) ? (v3Point2.Z) : (v3RigidBody2Max.Z);
             }
 
-            float margin = 0.02f;
+            
 
             // X
             bool bCollX = false;
@@ -183,8 +184,6 @@ namespace Physics
             {
                 Vector3 v3Start = rigidBody2.m_listPoints[rigidBody2.m_listIndices[id + 0]];
                 Vector3 v3End = rigidBody2.m_listPoints[rigidBody2.m_listIndices[id + 1]];
-
-                float margin = 0.02f;
                 
                 for (int i = 0; i <= step; i++)
                 {
