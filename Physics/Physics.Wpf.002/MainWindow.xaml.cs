@@ -57,7 +57,7 @@ namespace Physics.Wpf._002
             plane = new Physics.Plane(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 1, 0));
             rigidBody1 = new RigidBody();
 
-            Vector3 v3Gravity = new Vector3(0, -9.81f, 0);
+            Vector3 v3Gravity = new Vector3(0, -1.0f, 0);
 
             rigidBody1.m_fMass = 1.0f;
             rigidBody1.m_v3Position = new Vector3(0f, 4.0f, 0);
@@ -182,7 +182,7 @@ namespace Physics.Wpf._002
             rigidBody3.CalculateNormals();
 
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Tick += Timer_Tick; ;
+            timer.Tick += Timer_Tick;
             timer.Interval = TimeSpan.FromSeconds(0);
             timer.Start();
         }
@@ -209,7 +209,7 @@ namespace Physics.Wpf._002
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            int steps = 10;
+            int steps = 20;
             float step = dt / (float)steps;
 
             for (int i = 0; i < steps; i++)
