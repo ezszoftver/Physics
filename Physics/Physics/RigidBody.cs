@@ -13,6 +13,7 @@ namespace Physics
     {
         public List<Vector3> m_listPoints = new List<Vector3>();
         public List<int> m_listIndices = new List<int>();
+
         public List<Vector3> m_listTriangleNormals = new List<Vector3>();
 
         public Vector3 m_fGravity = new Vector3();
@@ -22,11 +23,13 @@ namespace Physics
         public Vector3 m_v3Force = new Vector3();
         public Vector3 m_v3LinearAcceleration = new Vector3();
         public Vector3 m_v3LinearVelocity = new Vector3();
+        public Vector3 m_v3ElapsedPosition = new Vector3();
         public Vector3 m_v3Position = new Vector3();
         
         public Vector3 m_v3Torque = new Vector3();
         public Vector3 m_v3AngularAcceleration = new Vector3();
         public Vector3 m_v3AngularVelocity = new Vector3();
+        public Vector3 m_v3ElapsedRotate = new Vector3();
         public Vector3 m_v3Rotate = new Vector3();
 
         public Matrix4 m_m4World = Matrix4.Identity;
@@ -49,12 +52,14 @@ namespace Physics
             m_v3LinearAcceleration = m_fGravity + (m_v3Force / m_fMass);
             m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
             m_v3LinearVelocity -= m_v3LinearVelocity * (1.0f - m_fLinearDamping) * m_fDeltaTime;
+            m_v3ElapsedPosition = new Vector3(m_v3Position);
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
             Matrix4 m4Translate = Matrix4.CreateTranslation(m_v3Position);
 
             m_v3AngularAcceleration = m_v3Torque / m_fMass;
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
             m_v3AngularVelocity -= m_v3AngularVelocity * (1.0f - m_fAngularDamping) * m_fDeltaTime;
+            m_v3ElapsedRotate = new Vector3(m_v3Rotate);
             m_v3Rotate += m_v3AngularVelocity * m_fDeltaTime;
             
             Matrix4 m4RotX = Matrix4.CreateRotationX(m_v3Rotate.X);

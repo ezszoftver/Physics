@@ -12,7 +12,7 @@ namespace Physics
     public class CollisionDetection
     {
         public static int step = 10;
-        public static float margin = 0.0005f;
+        public static float margin = 0.005f;
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits, ref Vector3 v3Separate)
         {
@@ -31,7 +31,7 @@ namespace Physics
                     Vector3 v3Start = ((1.0f - u) * v3A) + (u * v3B);
                     Vector3 v3End = ((1.0f - u) * v3A) + (u * v3C);
 
-                    for (int j = 0; j <= step; j++)
+                    for (int j = 0; j <= /*step*/1; j++)
                     {
                         float v = (float)j / (float)step;
                         
@@ -39,13 +39,12 @@ namespace Physics
 
                         Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody.m_m4World).Xyz;
                         float dist = plane.GetDistance(v3PointInWorld);
-                        if (dist <= 0.0f)
+                        if (dist < 0.01f)
                         {
                             Hit hit = new Hit();
-
                             hit.m_v3Normal = plane.m_v3Normal;
-                            hit.t = Math.Abs(dist);
-                            hit.m_v3PositionInWorld = v3PointInWorld - (hit.m_v3Normal * hit.t * 0.5f);
+                            hit.m_v3PositionInWorld = v3PointInWorld;
+                            hit.t = 0.0f;
 
                             listHits.Add(hit);
                         }
@@ -69,7 +68,7 @@ namespace Physics
             return false;
         }
 
-        public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits2, ref Vector3 v3Separate2) 
+        public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits, ref Vector3 v3Separate2) 
         {
             // aabb swep-test
             if
@@ -82,30 +81,24 @@ namespace Physics
             }
 
             // points in other body
-            List<Vector3> listPoints = new List<Vector3>();
-            GetPointsInConvexMesh(rigidBody1, rigidBody2, ref listPoints);
-            GetPointsInConvexMesh(rigidBody2, rigidBody1, ref listPoints);
+            List<Hit> listHits2 = new List<Hit>();
+            GetPointsInConvexMesh(rigidBody1, rigidBody2, ref listHits2);
 
-            // separate
-            Vector3 v3Normal1 = new Vector3();
-            float t1 = 0.0f;
-            SearchMinSeparate(rigidBody1, listPoints, ref v3Normal1, ref t1);
+            //List<Hit> listHits1 = new List<Hit>();
+            //GetPointsInConvexMesh(rigidBody2, rigidBody1, ref listHits1);
 
-            // create hits
-            listHits2.Clear();
-            foreach (Vector3 v3PosInWorld in listPoints) 
+            foreach (Hit hit in listHits2) 
             {
-                Hit hit = new Hit();
-                hit.m_v3Normal = v3Normal1;
-				hit.t = t1;
-                hit.m_v3PositionInWorld = v3PosInWorld - (hit.m_v3Normal * hit.t * 0.5f);
-
-                listHits2.Add(hit);
+                listHits.Add(hit);
             }
 
-            v3Separate2 = v3Normal1 * t1;
+            //foreach (Hit hit in listHits1)
+            //{
+            //    //hit.m_v3Normal *= -1.0f;
+            //    listHits.Add(hit);
+            //}
 
-            return (listHits2.Count() > 0);
+            return (listHits.Count() > 0);
         }
 
         private static bool IsOverlapAABB(RigidBody rigidBody1, RigidBody rigidBody2) 
@@ -175,7 +168,7 @@ namespace Physics
             return (bCollX && bCollY && bCollZ);
         }
 
-        private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Vector3> listPoints)
+        private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits)
         {
             Matrix4 m4FinalTransform = Matrix4.Mult(rigidBody2.m_m4World, rigidBody1.m_m4World.Inverted());
 
@@ -184,6 +177,7 @@ namespace Physics
                 Vector3 v3A = rigidBody2.m_listPoints[rigidBody2.m_listIndices[id + 0]];
                 Vector3 v3B = rigidBody2.m_listPoints[rigidBody2.m_listIndices[id + 1]];
                 Vector3 v3C = rigidBody2.m_listPoints[rigidBody2.m_listIndices[id + 2]];
+                Vector3 v3Normal = Vector3.Cross(v3B - v3A, v3C - v3A).Normalized();
 
                 for (int i = 0; i <= step; i++)
                 {
@@ -192,7 +186,7 @@ namespace Physics
                     Vector3 v3Start = ((1.0f - u) * v3A) + (u * v3B);
                     Vector3 v3End = ((1.0f - u) * v3A) + (u * v3C);
 
-                    for (int j = 0; j <= step; j++)
+                    for (int j = 0; j <= /*step*/1; j++)
                     {
                         float v = (float)j / (float)step;
 
@@ -204,6 +198,8 @@ namespace Physics
                         int nId = 0;
                         for (int id2 = 0; id2 < rigidBody1.m_listIndices.Count; id2 += 3, nId++)
                         {
+                            if (false == bIsIn) { continue; }
+
                             Vector3 v3AInLocal = rigidBody1.m_listPoints[rigidBody1.m_listIndices[id2 + 0]];
                             Vector3 v3NLocal = rigidBody1.m_listTriangleNormals[nId];
 
@@ -216,10 +212,15 @@ namespace Physics
                             }
                         }
 
-                        if (true == bIsIn)
+                        if (true == bIsIn) 
                         {
-                            Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz;
-                            listPoints.Add(v3PointInWorld);
+                            Hit hit = new Hit();
+                            
+                            hit.m_v3Normal = Vector4.Transform(new Vector4(v3Normal, 0), rigidBody2.m_m4World).Xyz;
+                            hit.m_v3PositionInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz + hit.m_v3Normal * 0.2f;
+                            hit.t = 0.0f;
+
+                            listHits.Add(hit);
                         }
                     }
                 }
@@ -238,16 +239,16 @@ namespace Physics
             GL.End();
             GL.PointSize(1);
 
-            //GL.LineWidth(2);
-            //GL.Begin(PrimitiveType.Lines);
-            //GL.Color3(1.0f, 1.0f, 1.0f);
-            //foreach (Hit hit in listHits)
-            //{
-            //    GL.Vertex3(hit.m_v3PositionInWorld);
-            //    GL.Vertex3(hit.m_v3PositionInWorld + (hit.m_v3Normal * 1.0f));
-            //}
-            //GL.End();
-            //GL.LineWidth(1);
+            GL.LineWidth(2);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Color3(1.0f, 1.0f, 1.0f);
+            foreach (Hit hit in listHits)
+            {
+                GL.Vertex3(hit.m_v3PositionInWorld);
+                GL.Vertex3(hit.m_v3PositionInWorld + (hit.m_v3Normal * 1.0f));
+            }
+            GL.End();
+            GL.LineWidth(1);
         }
 
         private static float ToRadian(float fDegree)

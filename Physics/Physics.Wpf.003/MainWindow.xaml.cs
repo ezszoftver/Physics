@@ -19,7 +19,7 @@ using OpenTK;
 using Physics;
 using System.Windows.Threading;
 
-namespace Physics.Wpf._002
+namespace Physics.Wpf._003
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -60,10 +60,10 @@ namespace Physics.Wpf._002
             Vector3 v3Gravity = new Vector3(0, -2.0f, 0);
 
             rigidBody1.m_fMass = 1.0f;
-            rigidBody1.m_v3Position = new Vector3(0f, 4.0f, 0);
+            rigidBody1.m_v3Position = new Vector3(0f, 1.0f, 0);
             rigidBody1.m_fGravity = v3Gravity;
             rigidBody1.m_fRestitution = 0.1f;
-            rigidBody1.m_v3Rotate = new Vector3(ToRadian(10.0f), 0, ToRadian(20.0f));
+            rigidBody1.m_v3Rotate = new Vector3(0, 0, 0);
             rigidBody1.m_fLinearDamping = 0.1f;
             rigidBody1.m_fAngularDamping = 0.1f;
 
@@ -102,22 +102,22 @@ namespace Physics.Wpf._002
             rigidBody2 = new RigidBody();
 
             rigidBody2.m_fMass = 1.0f;
-            rigidBody2.m_v3Position = new Vector3(2.0f, 8.0f, 0);
+            rigidBody2.m_v3Position = new Vector3(0.0f, 3.5f, 0);
             rigidBody2.m_fGravity = v3Gravity;
             rigidBody2.m_fRestitution = 0.1f;
-            rigidBody2.m_v3Rotate = new Vector3(ToRadian(-30.0f), ToRadian(75.0f), ToRadian(20.0f));
+            rigidBody2.m_v3Rotate = new Vector3(0, 0, 0);
             rigidBody2.m_fLinearDamping = 0.1f;
             rigidBody2.m_fAngularDamping = 0.1f;
 
-            float fScale = 2.0f;
-            rigidBody2.m_listPoints.Add(new Vector3(-0.2f, -2.0f, -0.3f) * fScale);
-            rigidBody2.m_listPoints.Add(new Vector3(+0.2f, -2.0f, -0.3f) * fScale);
-            rigidBody2.m_listPoints.Add(new Vector3(-0.2f, +2.0f, -0.3f) * fScale);
-            rigidBody2.m_listPoints.Add(new Vector3(+0.2f, +2.0f, -0.3f) * fScale);
-            rigidBody2.m_listPoints.Add(new Vector3(-0.2f, -2.0f, +0.3f) * fScale);
-            rigidBody2.m_listPoints.Add(new Vector3(+0.2f, -2.0f, +0.3f) * fScale);
-            rigidBody2.m_listPoints.Add(new Vector3(-0.2f, +2.0f, +0.3f) * fScale);
-            rigidBody2.m_listPoints.Add(new Vector3(+0.2f, +2.0f, +0.3f) * fScale);
+            float fScale = 1.0f;
+            rigidBody2.m_listPoints.Add(new Vector3(-2.0f, -1.0f, -1.5f) * fScale);
+            rigidBody2.m_listPoints.Add(new Vector3(+2.0f, -1.0f, -1.5f) * fScale);
+            rigidBody2.m_listPoints.Add(new Vector3(-2.0f, +1.0f, -1.5f) * fScale);
+            rigidBody2.m_listPoints.Add(new Vector3(+2.0f, +1.0f, -1.5f) * fScale);
+            rigidBody2.m_listPoints.Add(new Vector3(-2.0f, -1.0f, +1.5f) * fScale);
+            rigidBody2.m_listPoints.Add(new Vector3(+2.0f, -1.0f, +1.5f) * fScale);
+            rigidBody2.m_listPoints.Add(new Vector3(-2.0f, +1.0f, +1.5f) * fScale);
+            rigidBody2.m_listPoints.Add(new Vector3(+2.0f, +1.0f, +1.5f) * fScale);
 
             // back
             rigidBody2.m_listIndices.AddRange(new int[] { 3, 1, 0 });
@@ -229,7 +229,7 @@ namespace Physics.Wpf._002
                     rigidBody1.m_v3Position += v3Separate;
                 }
 
-				v3Separate = new Vector3();
+                v3Separate = new Vector3();
                 listHits = new List<Hit>();
                 if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody2, plane, ref listHits, ref v3Separate))
                 {
@@ -241,7 +241,7 @@ namespace Physics.Wpf._002
 
                 v3Separate = new Vector3();
                 listHits = new List<Hit>();
-                if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits, ref v3Separate)) 
+                if (true == Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits, ref v3Separate))
                 {
                     //Physics.CollisionDetection.DrawHits(listHits);
                     Physics.CollisionResponse.Apply(rigidBody2, listHits, v3Separate, step);

@@ -132,6 +132,8 @@ namespace Physics.Wpf._001
                 {
                     //Physics.CollisionDetection.DrawHits(listHits);
                     Physics.CollisionResponse.Apply(rigidBody, listHits, v3Separate, step);
+
+                    rigidBody.m_v3Position += v3Separate;
                 }
             }
 
