@@ -15,8 +15,6 @@ namespace Physics
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits)
         {
-            listHits.Clear();
-
             for (int i = 0; i < rigidBody.m_listPoints2.Count; i++)
             {
                 Vector3 v3Point = rigidBody.m_listPoints2[i];
@@ -48,8 +46,6 @@ namespace Physics
 
         private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits)
         {
-            listHits.Clear();
-
             Matrix4 m4FinalTransform = Matrix4.Mult(rigidBody2.m_m4World, rigidBody1.m_m4World.Inverted());
 
             for(int i = 0; i < rigidBody2.m_listPoints2.Count; i++)
