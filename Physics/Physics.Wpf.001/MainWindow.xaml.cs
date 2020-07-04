@@ -56,8 +56,8 @@ namespace Physics.Wpf._001
             rigidBody = new RigidBody();
 
             rigidBody.m_fMass = 1.0f;
-            rigidBody.m_v3Position = new Vector3(0, 8.0f, 0);
-            rigidBody.m_fGravity = new Vector3(0, -9.81f, 0);
+            rigidBody.m_v3Position = new Vector3(0, 5.0f, 0);
+            rigidBody.m_fGravity = new Vector3(0, -2.0f, 0);
             rigidBody.m_fRestitution = 0.5f;
             rigidBody.m_v3Rotate = new Vector3(ToRadian(30.0f), 0, ToRadian(20.0f));
 
@@ -126,14 +126,10 @@ namespace Physics.Wpf._001
             {
                 rigidBody.Update(step);
 
-				Vector3 v3Separate = new Vector3();
-                List<Hit> listHits = new List<Hit>();
-                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody, plane, ref listHits, ref v3Separate))
+                List<Hit> listHits1 = new List<Hit>();
+                if (true == Physics.CollisionDetection.RigidBodyAndPlane(rigidBody, plane, ref listHits1))
                 {
-                    //Physics.CollisionDetection.DrawHits(listHits);
-                    Physics.CollisionResponse.Apply(rigidBody, listHits, v3Separate, step);
-
-                    rigidBody.m_v3Position += v3Separate;
+                    Physics.CollisionResponse.Apply(rigidBody, listHits1, step);
                 }
             }
 

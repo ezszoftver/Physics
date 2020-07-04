@@ -11,18 +11,21 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static int step = 10;
+        public static int step = 20;
         public static float margin = 0.01f;
 
-        public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits, ref Vector3 v3Separate)
+        public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits)
         {
             listHits.Clear();
 
-            for (int id = 0; id < rigidBody.m_listIndices.Count(); id += 3)
+            int nIdN = 0;
+            for (int id = 0; id < rigidBody.m_listIndices.Count(); id += 3, nIdN++)
             {
                 Vector3 v3A = rigidBody.m_listPoints[rigidBody.m_listIndices[id + 0]];
                 Vector3 v3B = rigidBody.m_listPoints[rigidBody.m_listIndices[id + 1]];
                 Vector3 v3C = rigidBody.m_listPoints[rigidBody.m_listIndices[id + 2]];
+
+                Vector3 v3Normal = rigidBody.m_listTriangleNormals[nIdN];
 
                 for (int i = 0; i <= step; i++)
                 {
@@ -42,9 +45,9 @@ namespace Physics
                         if (dist < 0.01f)
                         {
                             Hit hit = new Hit();
-                            hit.m_v3Normal = plane.m_v3Normal;
+                            hit.m_v3Normal = Vector4.Transform(new Vector4(v3Normal, 0), rigidBody.m_m4World).Xyz;/*plane.m_v3Normal;*/ 
                             hit.m_v3PositionInWorld = v3PointInWorld;
-                            hit.t = 0.0f;
+                            hit.m_v3SeparateDir = -hit.m_v3Normal;
 
                             listHits.Add(hit);
                         }
@@ -53,22 +56,10 @@ namespace Physics
                 }
             }
 
-            // separate
-            if (listHits.Count() > 0)
-            {
-				Hit hitMaxT = new Hit();
-                foreach (Hit currentHit in listHits)
-                {
-                    if (currentHit.t > hitMaxT.t) { hitMaxT = currentHit; }
-                }
-                v3Separate = hitMaxT.m_v3Normal * hitMaxT.t;                
-                return true;
-            }
-
-            return false;
+            return (listHits.Count() > 0);
         }
 
-        public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits, ref Vector3 v3Separate2) 
+        public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits) 
         {
             // points in other body
             listHits.Clear();
@@ -130,7 +121,7 @@ namespace Physics
                             
                             hit.m_v3Normal = Vector4.Transform(new Vector4(v3Normal, 0), rigidBody2.m_m4World).Xyz;
                             hit.m_v3PositionInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz + hit.m_v3Normal * 0.2f;
-                            hit.t = 0.0f;
+                            hit.m_v3SeparateDir = -hit.m_v3Normal;
 
                             listHits.Add(hit);
                         }
