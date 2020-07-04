@@ -15,9 +15,9 @@ namespace Physics
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits)
         {
-            List<Hit> listHits2 = new List<Hit>();
+            listHits.Clear();
 
-            Parallel.For(0, rigidBody.m_listPoints2.Count, i => 
+            for (int i = 0; i < rigidBody.m_listPoints2.Count; i++)
             {
                 Vector3 v3Point = rigidBody.m_listPoints2[i];
                 Vector3 v3Normal = rigidBody.m_listPointsNormals2[i];
@@ -31,15 +31,9 @@ namespace Physics
                     hit.m_v3PositionInWorld = v3PointInWorld;
                     hit.m_v3SeparateDir = -hit.m_v3Normal;
 
-                    lock (listHits2) 
-                    {
-                        listHits2.Add(hit);
-                    }
+                    listHits.Add(hit);
                 }
-            });
-
-            listHits.Clear();
-            listHits.AddRange(listHits2);
+            }
 
             return (listHits.Count() > 0);
         }
@@ -54,10 +48,11 @@ namespace Physics
 
         private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits)
         {
+            listHits.Clear();
+
             Matrix4 m4FinalTransform = Matrix4.Mult(rigidBody2.m_m4World, rigidBody1.m_m4World.Inverted());
 
-            List<Hit> listHits2 = new List<Hit>();
-            Parallel.For(0, rigidBody2.m_listPoints2.Count, i =>
+            for(int i = 0; i < rigidBody2.m_listPoints2.Count; i++)
             {
                 Vector3 v3Point = rigidBody2.m_listPoints2[i];
                 Vector3 v3Normal = rigidBody2.m_listPointsNormals2[i];
@@ -89,15 +84,10 @@ namespace Physics
 
                     hit.m_v3SeparateDir = -hit.m_v3Normal;
 
-                    lock (listHits2) 
-                    {
-                        listHits2.Add(hit);
-                    }
+                    listHits.Add(hit);
                 }
-            });
+            }
 
-            listHits.Clear();
-            listHits.AddRange(listHits2);
         }
 
         public static void DrawHits(List<Hit> listHits) 
