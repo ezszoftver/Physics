@@ -89,7 +89,7 @@ namespace Physics.Wpf._001
             rigidBody.m_listIndices.AddRange(new int[] { 7, 3, 2 });
             rigidBody.m_listIndices.AddRange(new int[] { 2, 6, 7 });
 
-            rigidBody.CalculateNormals();
+            rigidBody.Create();
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Tick += Timer_Tick;

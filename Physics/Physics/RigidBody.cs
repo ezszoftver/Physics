@@ -11,10 +11,14 @@ namespace Physics
 {
     public class RigidBody
     {
+        public static int step = 10;
+
         public List<Vector3> m_listPoints = new List<Vector3>();
         public List<int> m_listIndices = new List<int>();
-
         public List<Vector3> m_listTriangleNormals = new List<Vector3>();
+
+        public List<Vector3> m_listPoints2        = new List<Vector3>();
+        public List<Vector3> m_listPointsNormals2 = new List<Vector3>();
 
         public Vector3 m_fGravity = new Vector3();
         public float m_fMass = 1.0f;
@@ -75,7 +79,44 @@ namespace Physics
             return (m_v3LinearVelocity + Vector3.Cross(m_v3AngularVelocity, v3Point));
         }
 
-        public void CalculateNormals() 
+        public void Create() 
+        {
+            CalculateNormals();
+
+            m_listPoints2.Clear();
+            m_listPointsNormals2.Clear();
+
+            int nIdN = 0;
+            for (int id = 0; id < m_listIndices.Count(); id += 3, nIdN++)
+            {
+                Vector3 v3A = m_listPoints[m_listIndices[id + 0]];
+                Vector3 v3B = m_listPoints[m_listIndices[id + 1]];
+                Vector3 v3C = m_listPoints[m_listIndices[id + 2]];
+
+                Vector3 v3Normal = m_listTriangleNormals[nIdN];
+
+                for (int i = 0; i <= step; i++)
+                {
+                    float u = (float)i / (float)step;
+
+                    Vector3 v3Start = ((1.0f - u) * v3A) + (u * v3B);
+                    Vector3 v3End = ((1.0f - u) * v3A) + (u * v3C);
+
+                    for (int j = 0; j <= /*step*/1; j++)
+                    {
+                        float v = (float)j / (float)step;
+
+                        Vector3 v3Point = ((1.0f - v) * v3Start) + (v * v3End);
+
+                        m_listPoints2.Add(v3Point);
+                        m_listPointsNormals2.Add(v3Normal);
+                    }
+
+                }
+            }
+        }
+
+        private void CalculateNormals() 
         {
             m_listTriangleNormals.Clear();
 

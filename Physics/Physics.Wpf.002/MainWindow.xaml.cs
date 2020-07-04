@@ -95,7 +95,7 @@ namespace Physics.Wpf._002
             rigidBody1.m_listIndices.AddRange(new int[] { 7, 3, 2 });
             rigidBody1.m_listIndices.AddRange(new int[] { 2, 6, 7 });
 
-            rigidBody1.CalculateNormals();
+            rigidBody1.Create();
 
             ;
 
@@ -138,7 +138,7 @@ namespace Physics.Wpf._002
             rigidBody2.m_listIndices.AddRange(new int[] { 7, 3, 2 });
             rigidBody2.m_listIndices.AddRange(new int[] { 2, 6, 7 });
 
-            rigidBody2.CalculateNormals();
+            rigidBody2.Create();
 
 
 
