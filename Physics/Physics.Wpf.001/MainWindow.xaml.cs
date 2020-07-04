@@ -126,13 +126,11 @@ namespace Physics.Wpf._001
             {
                 rigidBody.Update(step);
 
-                // collision detection
+                // collision detection and response
                 List<Hit> listHits1 = new List<Hit>();
                 Physics.CollisionDetection.RigidBodyAndPlane(rigidBody, plane, ref listHits1);
-                
-                // collision response
                 Physics.CollisionResponse.Apply(rigidBody, listHits1, step);
-                
+
                 // draw hits
                 //Physics.CollisionDetection.DrawHits(listHits1);
             }

@@ -40,7 +40,7 @@ namespace Physics
 
             listHits.Clear();
             listHits.AddRange(listHits2);
-            
+
             return (listHits.Count() > 0);
         }
 
@@ -67,8 +67,6 @@ namespace Physics
                 int nId = 0;
                 for (int id2 = 0; id2 < rigidBody1.m_listIndices.Count; id2 += 3, nId++)
                 {
-                    if (false == bIsIn) { continue; }
-                
                     Vector3 v3AInLocal = rigidBody1.m_listPoints[rigidBody1.m_listIndices[id2 + 0]];
                     Vector3 v3NLocal = rigidBody1.m_listTriangleNormals[nId];
                 
@@ -78,7 +76,7 @@ namespace Physics
                     if (dist > margin)
                     {
                         bIsIn = false;
-                        continue;
+                        break;
                     }
                 }
                 
@@ -87,7 +85,8 @@ namespace Physics
                     Hit hit = new Hit();
                     
                     hit.m_v3Normal = Vector4.Transform(new Vector4(v3Normal, 0), rigidBody2.m_m4World).Xyz;
-                    hit.m_v3PositionInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz + hit.m_v3Normal * 0.2f;
+                    hit.m_v3PositionInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz/* + hit.m_v3Normal * 0.2f*/;
+
                     hit.m_v3SeparateDir = -hit.m_v3Normal;
 
                     lock (listHits2) 

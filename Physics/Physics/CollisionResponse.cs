@@ -13,6 +13,8 @@ namespace Physics
     {
         public static void Apply(RigidBody rigidBody, List<Hit> listHits, float dt)
         {
+            //Vector3 v3SeparateForce = new Vector3();
+
             foreach (Hit hit in listHits)
             {
                 // calc contact velocity
@@ -33,10 +35,11 @@ namespace Physics
                 rigidBody.m_v3AngularVelocity += (J / rigidBody.m_fMass) * Vector3.Cross(rA, hit.m_v3Normal);
 
                 // separate
-                Vector3 v3SeparateAcceleration = hit.m_v3SeparateDir * dt * 2.0f;
-                rigidBody.m_v3LinearAcceleration += v3SeparateAcceleration;
-                rigidBody.m_v3AngularAcceleration += Vector3.Cross(rA, v3SeparateAcceleration);
+                //v3SeparateForce += hit.m_v3SeparateDir;
             }
+
+            // separate
+            //rigidBody.m_v3Position += v3SeparateForce * dt * dt;
         }
     }
 }

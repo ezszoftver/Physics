@@ -219,23 +219,21 @@ namespace Physics.Wpf._003
                 rigidBody2.Update(step);
                 //rigidBody3.Update(step);
 
-                // collision detection
+                // collision detection and response
                 List<Hit> listHits1 = new List<Hit>();
                 Physics.CollisionDetection.RigidBodyAndPlane(rigidBody1, plane, ref listHits1);
+                Physics.CollisionResponse.Apply(rigidBody1, listHits1, step);
 
                 List<Hit> listHits2 = new List<Hit>();
                 Physics.CollisionDetection.RigidBodyAndPlane(rigidBody2, plane, ref listHits2);
+                Physics.CollisionResponse.Apply(rigidBody2, listHits2, step);
 
                 List<Hit> listHits3 = new List<Hit>();
                 Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits3);
+                Physics.CollisionResponse.Apply(rigidBody2, listHits3, step);
 
                 List<Hit> listHits4 = new List<Hit>();
                 Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody2, rigidBody1, ref listHits4);
-
-                // collision response
-                Physics.CollisionResponse.Apply(rigidBody1, listHits1, step);
-                Physics.CollisionResponse.Apply(rigidBody2, listHits2, step);
-                Physics.CollisionResponse.Apply(rigidBody2, listHits3, step);
                 Physics.CollisionResponse.Apply(rigidBody1, listHits4, step);
 
                 // draw hits
