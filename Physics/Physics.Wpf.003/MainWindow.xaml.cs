@@ -233,17 +233,16 @@ namespace Physics.Wpf._003
                 Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody2, rigidBody1, ref listHits4);
 
                 // collision response
-                //Physics.CollisionDetection.DrawHits(listHits);
                 Physics.CollisionResponse.Apply(rigidBody1, listHits1, step);
-
-                //Physics.CollisionDetection.DrawHits(listHits);
                 Physics.CollisionResponse.Apply(rigidBody2, listHits2, step);
-
-                //Physics.CollisionDetection.DrawHits(listHits);
                 Physics.CollisionResponse.Apply(rigidBody2, listHits3, step);
-
-                //Physics.CollisionDetection.DrawHits(listHits);
                 Physics.CollisionResponse.Apply(rigidBody1, listHits4, step);
+
+                // draw hits
+                //Physics.CollisionDetection.DrawHits(listHits1);
+                //Physics.CollisionDetection.DrawHits(listHits2);
+                //Physics.CollisionDetection.DrawHits(listHits3);
+                //Physics.CollisionDetection.DrawHits(listHits4);
             }
 
             plane.Draw();
