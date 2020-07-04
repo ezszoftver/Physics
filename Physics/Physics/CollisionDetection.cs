@@ -11,7 +11,7 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static int step = 20;
+        public static int step = 10;
         public static float margin = 0.01f;
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits)
