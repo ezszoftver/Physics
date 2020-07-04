@@ -158,51 +158,5 @@ namespace Physics
         {
             return (fDegree / 180.0f * (float)Math.PI);
         }
-
-        private static void SearchMinSeparate(RigidBody rigidBody, List<Vector3> listPoints, ref Vector3 v3RetMinSeparateNormal, ref float fRetMinDist) 
-        {
-            if (0 == listPoints.Count()) 
-            {
-                return;
-            }
-
-            v3RetMinSeparateNormal = new Vector3();
-            fRetMinDist = float.MaxValue;
-
-            int nId = 0;
-            for (int id = 0; id < rigidBody.m_listIndices.Count; id += 3, nId++)
-            {
-                // plane pos
-                Vector3 v3A = rigidBody.m_listPoints[rigidBody.m_listIndices[id + 0]];
-                Vector3 v3AInWorld = Vector4.Transform(new Vector4(v3A, 1), rigidBody.m_m4World).Xyz;
-
-                // plane normal
-                Vector3 v3N = rigidBody.m_listTriangleNormals[nId];
-                Vector3 v3NInWorld = Vector4.Transform(new Vector4(v3N, 0), rigidBody.m_m4World).Xyz;
-                v3NInWorld.Normalize();
-
-                Plane plane = new Plane(v3AInWorld, v3NInWorld);
-
-                Vector3 v3LocalMaxSeparateNormal = new Vector3();
-                float fLocalMaxDist = float.MinValue;
-
-                foreach (Vector3 v3PointInWorld in listPoints) 
-                {
-                    float fDist = -plane.GetDistance(v3PointInWorld);
-
-                    if ((fDist + step) > fLocalMaxDist) 
-                    {
-                        v3LocalMaxSeparateNormal = v3NInWorld;
-                        fLocalMaxDist = fDist;
-                    }
-                }
-
-                if (fLocalMaxDist < fRetMinDist)
-                {
-                    v3RetMinSeparateNormal = v3LocalMaxSeparateNormal;
-                    fRetMinDist = fLocalMaxDist;
-                }
-            }
-        }
     }
 }
