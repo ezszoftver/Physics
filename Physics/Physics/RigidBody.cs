@@ -11,7 +11,7 @@ namespace Physics
 {
     public class RigidBody
     {
-        public static int step = 10;
+        public static float step = 1.0f; // 1meter
 
         public List<Vector3> m_listPoints = new List<Vector3>();
         public List<int> m_listIndices = new List<int>();
@@ -57,7 +57,7 @@ namespace Physics
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
             Matrix4 m4Translate = Matrix4.CreateTranslation(m_v3Position);
 
-            m_v3AngularAcceleration = m_v3Torque / m_fMass;
+            m_v3AngularAcceleration = (m_v3Torque / m_fMass);
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
             m_v3AngularVelocity -= m_v3AngularVelocity * (1.0f - m_fAngularDamping) * m_fDeltaTime;
             m_v3Rotate += m_v3AngularVelocity * m_fDeltaTime;
@@ -91,24 +91,84 @@ namespace Physics
 
                 Vector3 v3Normal = m_listTriangleNormals[nIdN];
 
-                for (int i = 0; i <= step; i++)
+                // belso terulet
+                for (float i = step; i < Vector3.Distance(v3B, v3A); i += step)
                 {
-                    float u = (float)i / (float)step;
+                    float u = (float)i / Vector3.Distance(v3B, v3A);
 
                     Vector3 v3Start = ((1.0f - u) * v3A) + (u * v3B);
                     Vector3 v3End = ((1.0f - u) * v3A) + (u * v3C);
 
-                    for (int j = 0; j <= /*step*/1; j++)
+                    
+                    for (float j = step; j < Vector3.Distance(v3End, v3Start); j += step) 
                     {
-                        float v = (float)j / (float)step;
+                        float v = (float)j / Vector3.Distance(v3End, v3Start);
 
                         Vector3 v3Point = ((1.0f - v) * v3Start) + (v * v3End);
 
                         m_listPoints2.Add(v3Point);
                         m_listPointsNormals2.Add(v3Normal);
                     }
-
                 }
+
+                // elek
+                for (float i = step; i < Vector3.Distance(v3B, v3A); i += step) 
+                {
+                    float u = (float)i / Vector3.Distance(v3B, v3A);
+
+                    Vector3 v3Point = ((1.0f - u) * v3A) + (u * v3B);
+
+                    m_listPoints2.Add(v3Point);
+                    m_listPointsNormals2.Add(v3Normal);
+                }
+
+                for (float i = step; i < Vector3.Distance(v3C, v3A); i += step)
+                {
+                    float u = (float)i / Vector3.Distance(v3C, v3A);
+
+                    Vector3 v3Point = ((1.0f - u) * v3A) + (u * v3C);
+
+                    m_listPoints2.Add(v3Point);
+                    m_listPointsNormals2.Add(v3Normal);
+                }
+
+                for (float i = step; i < Vector3.Distance(v3C, v3B); i += step)
+                {
+                    float u = (float)i / Vector3.Distance(v3C, v3B);
+
+                    Vector3 v3Point = ((1.0f - u) * v3B) + (u * v3C);
+
+                    m_listPoints2.Add(v3Point);
+                    m_listPointsNormals2.Add(v3Normal);
+                }
+
+                // csucsok
+                m_listPoints2.Add(v3A);
+                m_listPointsNormals2.Add(v3Normal);
+
+                m_listPoints2.Add(v3B);
+                m_listPointsNormals2.Add(v3Normal);
+
+                m_listPoints2.Add(v3C);
+                m_listPointsNormals2.Add(v3Normal);
+
+                //for (int i = 0; i <= step; i++)
+                //{
+                //    float u = (float)i / (float)step;
+                //
+                //    Vector3 v3Start = ((1.0f - u) * v3A) + (u * v3B);
+                //    Vector3 v3End = ((1.0f - u) * v3A) + (u * v3C);
+                //
+                //    for (int j = 0; j <= step; j++)
+                //    {
+                //        float v = (float)j / (float)step;
+                //
+                //        Vector3 v3Point = ((1.0f - v) * v3Start) + (v * v3End);
+                //
+                //        
+                //    }
+                //
+                //}
             }
         }
 

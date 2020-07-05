@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Physics.Wpf.003", "Physics.
 		{04E2B724-35CB-4A97-970A-9A4353A7BBDF} = {04E2B724-35CB-4A97-970A-9A4353A7BBDF}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Physics.Wpf.004", "Physics.Wpf.004\Physics.Wpf.004.csproj", "{5249EBDF-1B11-47C6-9E99-0DD886525B0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,6 +41,10 @@ Global
 		{AC9C092B-2689-4709-84E6-32B8A1AFFCAA}.Debug|x64.Build.0 = Debug|x64
 		{AC9C092B-2689-4709-84E6-32B8A1AFFCAA}.Release|x64.ActiveCfg = Release|x64
 		{AC9C092B-2689-4709-84E6-32B8A1AFFCAA}.Release|x64.Build.0 = Release|x64
+		{5249EBDF-1B11-47C6-9E99-0DD886525B0F}.Debug|x64.ActiveCfg = Debug|x64
+		{5249EBDF-1B11-47C6-9E99-0DD886525B0F}.Debug|x64.Build.0 = Debug|x64
+		{5249EBDF-1B11-47C6-9E99-0DD886525B0F}.Release|x64.ActiveCfg = Release|x64
+		{5249EBDF-1B11-47C6-9E99-0DD886525B0F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -232,15 +232,10 @@ namespace Physics.Wpf._002
                 Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody1, rigidBody2, ref listHits3);
                 Physics.CollisionResponse.Apply(rigidBody2, rigidBody1, listHits3, step);
 
-                //List<Hit> listHits4 = new List<Hit>();
-                //Physics.CollisionDetection.RigidBodyAndRigidBody(rigidBody2, rigidBody1, ref listHits4);
-                //Physics.CollisionResponse.Apply(rigidBody1, rigidBody2, listHits4, step);
-
                 // draw hits
                 //Physics.CollisionDetection.DrawHits(listHits1);
                 //Physics.CollisionDetection.DrawHits(listHits2);
                 //Physics.CollisionDetection.DrawHits(listHits3);
-                //Physics.CollisionDetection.DrawHits(listHits4);
             }
 
             plane.Draw();

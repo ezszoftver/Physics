@@ -13,8 +13,6 @@ namespace Physics
     {
         public static void Apply(RigidBody rigidBody, List<Hit> listHits, float dt)
         {
-            //Vector3 v3SeparateForce = new Vector3();
-
             foreach (Hit hit in listHits)
             {
                 // calc contact velocity
@@ -43,7 +41,7 @@ namespace Physics
                 // calc contact velocity
                 Vector3 rA = hit.m_v3PositionInWorld - rigidBody1.m_v3Position;
                 Vector3 rB = hit.m_v3PositionInWorld - rigidBody2.m_v3Position;
-                Vector3 v3RelVelocity = rigidBody1.GetPointVelocity(rA) + rigidBody1.GetPointVelocity(rB);
+                Vector3 v3RelVelocity = rigidBody1.GetPointVelocity(rA) - rigidBody2.GetPointVelocity(rB);
                 float fProjVelocity = Vector3.Dot(v3RelVelocity, hit.m_v3Normal);
 
                 // calc inertia

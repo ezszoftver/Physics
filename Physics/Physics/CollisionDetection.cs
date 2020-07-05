@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using System.Threading;
 
 namespace Physics
 {
@@ -13,27 +14,34 @@ namespace Physics
     {
         public static float margin = 0.01f;
 
-        public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits)
+        public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits2)
         {
-            for (int i = 0; i < rigidBody.m_listPoints2.Count; i++)
+            List<Hit> listHits = new List<Hit>();
+
+            Parallel.For(0, rigidBody.m_listPoints2.Count, i => 
             {
                 Vector3 v3Point = rigidBody.m_listPoints2[i];
                 Vector3 v3Normal = rigidBody.m_listPointsNormals2[i];
 
                 Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody.m_m4World).Xyz;
                 float dist = plane.GetDistance(v3PointInWorld);
-                if (dist < 0.01f)
+                if (dist < 0.0f)
                 {
                     Hit hit = new Hit();
-                    hit.m_v3Normal = Vector4.Transform(new Vector4(v3Normal, 0), rigidBody.m_m4World).Xyz;/*plane.m_v3Normal;*/
+                    hit.m_v3Normal = plane.m_v3Normal;
                     hit.m_v3PositionInWorld = v3PointInWorld;
-                    hit.m_v3SeparateDir = -hit.m_v3Normal;
-
-                    listHits.Add(hit);
+                    
+                    lock (listHits) 
+                    {
+                        listHits.Add(hit);
+                    }
                 }
-            }
+            });
 
-            return (listHits.Count() > 0);
+            listHits2.Clear();
+            listHits2.AddRange(listHits);
+
+            return (listHits2.Count() > 0);
         }
 
         public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits) 
@@ -44,11 +52,13 @@ namespace Physics
             return (listHits.Count() > 0);
         }
 
-        private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits)
+        private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits2)
         {
+            List<Hit> listHits = new List<Hit>();
+
             Matrix4 m4FinalTransform = Matrix4.Mult(rigidBody2.m_m4World, rigidBody1.m_m4World.Inverted());
 
-            for(int i = 0; i < rigidBody2.m_listPoints2.Count; i++)
+            Parallel.For(0, rigidBody2.m_listPoints2.Count, i =>
             {
                 Vector3 v3Point = rigidBody2.m_listPoints2[i];
                 Vector3 v3Normal = rigidBody2.m_listPointsNormals2[i];
@@ -76,14 +86,17 @@ namespace Physics
                     Hit hit = new Hit();
                     
                     hit.m_v3Normal = Vector4.Transform(new Vector4(v3Normal, 0), rigidBody2.m_m4World).Xyz;
-                    hit.m_v3PositionInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz/* + hit.m_v3Normal * 0.2f*/;
+                    hit.m_v3PositionInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz;
 
-                    hit.m_v3SeparateDir = -hit.m_v3Normal;
-
-                    listHits.Add(hit);
+                    lock (listHits) 
+                    {
+                        listHits.Add(hit);
+                    }
                 }
-            }
+            });
 
+            listHits2.Clear();
+            listHits2.AddRange(listHits);
         }
 
         public static void DrawHits(List<Hit> listHits) 
