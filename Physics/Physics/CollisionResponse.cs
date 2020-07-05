@@ -32,6 +32,12 @@ namespace Physics
                 rigidBody.m_v3LinearVelocity += (J) * hit.m_v3Normal;
                 rigidBody.m_v3AngularVelocity += (J) * Vector3.Cross(rA, hit.m_v3Normal);
             }
+
+            // separate
+            foreach (Hit hit in listHits) 
+            {
+                //rigidBody.m_v3Position += hit.m_v3Normal * (float)listHits.Count * 0.0000001f;
+            }
         }
 
         public static void Apply(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits, float dt)
@@ -58,6 +64,13 @@ namespace Physics
 
                 rigidBody2.m_v3LinearVelocity -= (J * 0.5f) * hit.m_v3Normal;
                 rigidBody2.m_v3AngularVelocity -= (J * 0.5f) * Vector3.Cross(rB, hit.m_v3Normal);
+            }
+
+            // separate
+            foreach (Hit hit in listHits) 
+            {
+                rigidBody1.m_v3Position -= hit.m_v3Normal / (float)listHits.Count * 0.001f;
+                rigidBody2.m_v3Position += hit.m_v3Normal / (float)listHits.Count * 0.001f;
             }
         }
     }

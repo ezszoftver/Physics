@@ -33,7 +33,7 @@ namespace Physics.Wpf._004
         Physics.RigidBody rigidBody1;
         Physics.RigidBody rigidBody2;
 
-        OBJLoader loader = new OBJLoader();
+        OBJLoader loader;
 
         float ToRadian(float fDegree)
         {
@@ -55,10 +55,11 @@ namespace Physics.Wpf._004
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.ClearColor(0.5f, 0.5f, 1.0f, 1.0f);
 
-            loader.LoadFromFile("", "henger.obj");
-
             plane = new Physics.Plane(new Vector3(0.0f, 0.0f, 0.0f), new Vector3(0, 1, 0));
             rigidBody1 = new RigidBody();
+
+            loader = new OBJLoader();
+            loader.LoadFromFile("", "henger.obj");
 
             Vector3 v3Gravity = new Vector3(0, -2.0f, 0);
 
@@ -89,6 +90,9 @@ namespace Physics.Wpf._004
             }
             
             rigidBody1.Create();
+
+            loader = new OBJLoader();
+            loader.LoadFromFile("", "sphere.obj");
 
             rigidBody2 = new RigidBody();
 
