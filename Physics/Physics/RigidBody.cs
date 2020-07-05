@@ -11,7 +11,7 @@ namespace Physics
 {
     public class RigidBody
     {
-        public static float step = 1.0f; // 1meter
+        public static float step = 0.5f; // 0.5 meter
 
         public List<Vector3> m_listPoints = new List<Vector3>();
         public List<int> m_listIndices = new List<int>();

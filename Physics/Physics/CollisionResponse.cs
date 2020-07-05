@@ -29,15 +29,21 @@ namespace Physics
                 float J = nominator / (term1 + term2 + term3 + term4);
 
                 // apply velocity
-                rigidBody.m_v3LinearVelocity += (J) * hit.m_v3Normal;
-                rigidBody.m_v3AngularVelocity += (J) * Vector3.Cross(rA, hit.m_v3Normal);
+                rigidBody.m_v3LinearVelocity += (J * 0.5f) * hit.m_v3Normal;
+                rigidBody.m_v3AngularVelocity += (J * 0.5f) * Vector3.Cross(rA, hit.m_v3Normal);
             }
 
             // separate
-            foreach (Hit hit in listHits) 
+            if (listHits.Count > 0) 
             {
-                //rigidBody.m_v3Position += hit.m_v3Normal * (float)listHits.Count * 0.0000001f;
+                Vector3 v3Separate = new Vector3();
+                foreach (Hit hit in listHits)
+                {
+                    v3Separate += hit.m_v3Normal;
+                }
+                rigidBody.m_v3Position += v3Separate.Normalized() * dt * 0.025f;
             }
+            
         }
 
         public static void Apply(RigidBody rigidBody1, RigidBody rigidBody2, List<Hit> listHits, float dt)
@@ -67,10 +73,14 @@ namespace Physics
             }
 
             // separate
-            foreach (Hit hit in listHits) 
+            if (listHits.Count > 0)
             {
-                rigidBody1.m_v3Position -= hit.m_v3Normal / (float)listHits.Count * 0.001f;
-                rigidBody2.m_v3Position += hit.m_v3Normal / (float)listHits.Count * 0.001f;
+                Vector3 v3Separate = new Vector3();
+                foreach (Hit hit in listHits)
+                {
+                    v3Separate += hit.m_v3Normal;
+                }
+                rigidBody1.m_v3Position -= v3Separate.Normalized() * dt * 0.05f;
             }
         }
     }
