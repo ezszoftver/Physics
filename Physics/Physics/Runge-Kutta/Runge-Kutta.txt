@@ -1,0 +1,94 @@
+type
+  TVect2 = array[0..1] of Single;
+
+  TView = record
+    P: TVect2;
+    V: TVect2;
+    A: TVect2;
+    F: TVect2;
+  end;
+
+function Vector(X, Y: Single): TVect2;
+begin
+  Result[0] := X;
+  Result[1] := Y;
+end;
+
+function VectorAdd(V1, V2: TVect2): TVect2;
+begin
+  Result[0] := V1[0] + V2[0];
+  Result[1] := V1[1] + V2[1];
+end;
+
+function VectorScale(const V: TVect2; I: Single): TVect2;
+begin
+  Result[0] := V[0]*I;
+  Result[1] := V[1]*I;
+end;
+
+procedure RK4Integrate(var P, V, A: TVect2; Force: TVect2; DivMass, DT: Single);
+
+type
+  TState = record
+    Pos: TVect2;          // position
+    Vel: TVect2;          // velocity
+    Acc: TVect2;          // acceleration
+  end;
+
+  TDerivative = record
+    DPos: TVect2;          // derivative of position: velocity
+    DVel: TVect2;          // derivative of velocity: acceleration
+    DAcc: TVect2;          // derivative of acceleration
+  end;
+
+  function Evaluate(Initial: TState; Force: TVect2; DivMass, DT: Single; D: TDerivative): TDerivative;
+  var
+    State: TState;
+    Output: TDerivative;
+  begin
+    State.Pos := VectorAdd(Initial.Pos, VectorScale(D.DPos, DT));
+    State.Vel := VectorAdd(Initial.Vel, VectorScale(D.DVel, DT));
+    State.Acc := VectorAdd(Initial.Acc, VectorScale(D.DAcc, DT));
+
+    Output.DPos := State.Vel;
+    Output.DVel := State.Acc;
+    Output.DAcc := VectorScale(Force, DivMass);
+
+    Result := Output;
+  end;
+
+  procedure Integrate(var State: TState; Force: TVect2; DivMass, DT: Single);
+  var
+    A, B, C, D: TDerivative;
+    NewDerivative: TDerivative;
+    DXDT, DVDT, DADT: TVect2;
+  begin
+    A := Evaluate(State, Force, 0, DivMass, NewDerivative);
+    B := Evaluate(State, Force, DT*0.5, DivMass, a);
+    C := Evaluate(State, Force, DT*0.5, DivMass, b);
+    D := Evaluate(State, Force, DT, DivMass,     c);
+
+    DXDT := VectorScale(VectorAdd(A.DPos, VectorAdd(VectorScale(VectorAdd(B.DPos, C.DPos), 2), D.DPos)), 1/6);
+    DVDT := VectorScale(VectorAdd(A.DVel, VectorAdd(VectorScale(VectorAdd(B.DVel, C.DVel), 2), D.DVel)), 1/6);
+    DVDT := VectorScale(VectorAdd(A.DAcc, VectorAdd(VectorScale(VectorAdd(B.DAcc, C.DAcc), 2), D.DAcc)), 1/6);
+
+    State.Pos := VectorScale(VectorAdd(State.Pos, DXDT), DT);
+    State.Vel := VectorScale(VectorAdd(State.Vel, DVDT), DT);
+    State.Acc := VectorScale(VectorAdd(State.Acc, DADT), DT);
+  end;
+
+var
+  Start:    TState;
+  Derivate: TDerivative;
+
+begin
+  Start.Pos := P;
+  Start.Vel := V;
+  Start.Acc := A;
+
+  Integrate(Start, Force, DivMass, DT);
+
+  P := Start.Pos;
+  V := Start.Vel;
+  A := Start.Acc;
+end;
