@@ -47,27 +47,50 @@ namespace Physics
             return fRadian;
         }
 
+        OpenTK.Quaternion ToQuaternion(float roll, float pitch, float yaw) // yaw (Z), pitch (Y), roll (X)
+        {
+            // Abbreviations for the various angular functions
+            float cy = (float)Math.Cos(yaw * 0.5f);
+            float sy = (float)Math.Sin(yaw * 0.5f);
+            float cp = (float)Math.Cos(pitch * 0.5f);
+            float sp = (float)Math.Sin(pitch * 0.5f);
+            float cr = (float)Math.Cos(roll * 0.5f);
+            float sr = (float)Math.Sin(roll * 0.5f);
+
+            OpenTK.Quaternion q = new Quaternion();
+            q.W = cr * cp * cy + sr * sp * sy;
+            q.X = sr * cp * cy - cr * sp * sy;
+            q.Y = cr * sp * cy + sr * cp * sy;
+            q.Z = cr * cp * sy - sr * sp * cy;
+
+            return q;
+        }
+
         public void Update(float dt)
         {
             m_fDeltaTime = dt;
 
             m_v3LinearAcceleration = m_fGravity + (m_v3Force / m_fMass);
             m_v3LinearVelocity += m_v3LinearAcceleration * m_fDeltaTime;
-            m_v3LinearVelocity -= m_v3LinearVelocity * (1.0f - m_fLinearDamping) * m_fDeltaTime;
             m_v3Position += m_v3LinearVelocity * m_fDeltaTime;
             Matrix4 m4Translate = Matrix4.CreateTranslation(m_v3Position);
 
             m_v3AngularAcceleration = (m_v3Torque / m_fMass);
             m_v3AngularVelocity += m_v3AngularAcceleration * m_fDeltaTime;
-            m_v3AngularVelocity -= m_v3AngularVelocity * (1.0f - m_fAngularDamping) * m_fDeltaTime;
             m_v3Rotate += m_v3AngularVelocity * m_fDeltaTime;
-            
-            Matrix4 m4RotX = Matrix4.CreateRotationX(m_v3Rotate.X);
-            Matrix4 m4RotY = Matrix4.CreateRotationY(m_v3Rotate.Y);
-            Matrix4 m4RotZ = Matrix4.CreateRotationZ(m_v3Rotate.Z);
-            Matrix4 m4RotXYZ = Matrix4.Mult(Matrix4.Mult(m4RotX, m4RotY), m4RotZ);
 
-            m_m4World = Matrix4.Mult(m4RotXYZ, m4Translate);
+            // damping
+            m_v3LinearVelocity *= (float)Math.Pow(m_fLinearDamping, m_fDeltaTime);
+            m_v3AngularVelocity *= (float)Math.Pow(m_fAngularDamping, m_fDeltaTime);
+
+            //Matrix4 m4RotX = Matrix4.CreateRotationX(m_v3Rotate.X);
+            //Matrix4 m4RotY = Matrix4.CreateRotationY(m_v3Rotate.Y);
+            //Matrix4 m4RotZ = Matrix4.CreateRotationZ(m_v3Rotate.Z);
+            //Matrix4 m4RotXYZ = Matrix4.Mult(Matrix4.Mult(m4RotX, m4RotY), m4RotZ);
+            OpenTK.Quaternion quat = ToQuaternion(m_v3Rotate.X, m_v3Rotate.Y, m_v3Rotate.Z);
+            Matrix4 m4Rotate = Matrix4.CreateFromQuaternion(quat);
+
+            m_m4World = Matrix4.Mult(m4Rotate, m4Translate);
         }
 
         public Vector3 GetPointVelocity(Vector3 v3Point)
