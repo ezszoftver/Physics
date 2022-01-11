@@ -66,10 +66,10 @@ namespace Physics.Wpf._004
             rigidBody1.m_fMass = 1.0f;
             rigidBody1.m_v3Position = new Vector3(0f, 5.0f, 0);
             rigidBody1.m_fGravity = v3Gravity;
-            rigidBody1.m_fRestitution = 0.1f;
+            rigidBody1.m_fRestitution = 0.0f;
             rigidBody1.m_v3Rotate = new Vector3(ToRadian(0.0f), 0, ToRadian(60.0f));
-            rigidBody1.m_fLinearDamping = 0.1f;
-            rigidBody1.m_fAngularDamping = 0.1f;
+            rigidBody1.m_fLinearDamping = 0.5f;
+            rigidBody1.m_fAngularDamping = 0.5f;
 
             float scale = 0.1f;
             foreach (Vector3 v in loader.vertices) 

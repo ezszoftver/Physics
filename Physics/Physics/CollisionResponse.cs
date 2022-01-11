@@ -52,7 +52,7 @@ namespace Physics
                     }
                 }
 
-                rigidBody.m_v3Position += hit.m_v3Normal * hit.m_fPenetration;
+                rigidBody.m_v3Position += hit.m_v3Normal * hit.m_fPenetration * 0.99f;
             }
             
         }
@@ -102,8 +102,8 @@ namespace Physics
                     }
                 }
 
-                rigidBody1.m_v3Position += hit.m_v3Normal * hit.m_fPenetration * 0.5f;
-                rigidBody2.m_v3Position -= hit.m_v3Normal * hit.m_fPenetration * 0.5f;
+                rigidBody1.m_v3Position += hit.m_v3Normal * hit.m_fPenetration * 0.5f * 0.99f;
+                rigidBody2.m_v3Position -= hit.m_v3Normal * hit.m_fPenetration * 0.5f * 0.99f;
             }
         }
     }

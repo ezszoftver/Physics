@@ -62,10 +62,10 @@ namespace Physics.Wpf._003
             rigidBody1.m_fMass = 1.0f;
             rigidBody1.m_v3Position = new Vector3(0f, 1.0f, 0);
             rigidBody1.m_fGravity = v3Gravity;
-            rigidBody1.m_fRestitution = 0.1f;
+            rigidBody1.m_fRestitution = 0.0f;
             rigidBody1.m_v3Rotate = new Vector3(0, 0, 0);
-            rigidBody1.m_fLinearDamping = 0.1f;
-            rigidBody1.m_fAngularDamping = 0.1f;
+            rigidBody1.m_fLinearDamping = 0.5f;
+            rigidBody1.m_fAngularDamping = 0.5f;
 
             rigidBody1.m_listPoints.Add(new Vector3(-2.0f, -1.0f, -1.5f));
             rigidBody1.m_listPoints.Add(new Vector3(+2.0f, -1.0f, -1.5f));
@@ -104,10 +104,10 @@ namespace Physics.Wpf._003
             rigidBody2.m_fMass = 1.0f;
             rigidBody2.m_v3Position = new Vector3(0.0f, 3.5f, 0);
             rigidBody2.m_fGravity = v3Gravity;
-            rigidBody2.m_fRestitution = 0.1f;
+            rigidBody2.m_fRestitution = 0.0f;
             rigidBody2.m_v3Rotate = new Vector3(0, 0, 0);
-            rigidBody2.m_fLinearDamping = 0.1f;
-            rigidBody2.m_fAngularDamping = 0.1f;
+            rigidBody2.m_fLinearDamping = 0.5f;
+            rigidBody2.m_fAngularDamping = 0.5f;
 
             float fScale = 1.0f;
             rigidBody2.m_listPoints.Add(new Vector3(-2.0f, -1.0f, -1.5f) * fScale);
