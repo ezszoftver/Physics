@@ -12,7 +12,7 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static float margin = 0.01f;
+        public static float margin = 0.0f;
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits2)
         {
@@ -25,12 +25,13 @@ namespace Physics
 
                 Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody.m_m4World).Xyz;
                 float dist = plane.GetDistance(v3PointInWorld);
-                if (dist < 0.0f)
+                if (dist < margin)
                 {
                     Hit hit = new Hit();
                     hit.m_v3Normal = plane.m_v3Normal;
                     hit.m_v3PositionInWorld = v3PointInWorld;
-                    
+                    hit.m_fPenetration = Math.Abs(dist);
+
                     lock (listHits) 
                     {
                         listHits.Add(hit);
@@ -66,6 +67,7 @@ namespace Physics
 
                 bool bIsIn = true;
                 int nId = 0;
+                float dist2 = float.MaxValue;
                 for (int id2 = 0; id2 < rigidBody1.m_listIndices.Count; id2 += 3, nId++)
                 {
                     Vector3 v3AInLocal = rigidBody1.m_listPoints[rigidBody1.m_listIndices[id2 + 0]];
@@ -73,7 +75,12 @@ namespace Physics
                 
                     Plane plane = new Plane(v3AInLocal + (v3NLocal * margin), v3NLocal);
                     float dist = plane.GetDistance(v3PointInLocal);
-                
+
+                    if (Math.Abs(dist) < dist2) 
+                    {
+                        dist2 = Math.Abs(dist);
+                    }
+
                     if (dist > margin)
                     {
                         bIsIn = false;
@@ -85,8 +92,9 @@ namespace Physics
                 {
                     Hit hit = new Hit();
                     
-                    hit.m_v3Normal = Vector4.Transform(new Vector4(v3Normal, 0), rigidBody2.m_m4World).Xyz;
+                    hit.m_v3Normal = Vector4.Transform(new Vector4(-v3Normal, 0), rigidBody2.m_m4World).Xyz;
                     hit.m_v3PositionInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz;
+                    hit.m_fPenetration = Math.Abs(dist2);
 
                     lock (listHits) 
                     {

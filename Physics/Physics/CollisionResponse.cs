@@ -43,17 +43,16 @@ namespace Physics
             // separate
             if (listHits.Count > 0) 
             {
-                Vector3 v3Separate = new Vector3();
-                foreach (Hit hit in listHits)
+                Hit hit = new Hit();
+                foreach (Hit hit2 in listHits)
                 {
-                    v3Separate += hit.m_v3Normal;
+                    if (hit2.m_fPenetration > hit.m_fPenetration) 
+                    {
+                        hit = hit2;
+                    }
                 }
-                v3Separate.Normalize();
 
-                for (int i = 0; i < 50; i++) 
-                {
-                    rigidBody.m_v3Position += v3Separate * dt * 0.01f;
-                }
+                rigidBody.m_v3Position += hit.m_v3Normal * hit.m_fPenetration;
             }
             
         }
@@ -68,7 +67,7 @@ namespace Physics
                 Vector3 v3RelVelocity = rigidBody1.GetPointVelocity(rA) - rigidBody2.GetPointVelocity(rB);
                 float fProjVelocity = Vector3.Dot(v3RelVelocity, hit.m_v3Normal);
 
-                if (fProjVelocity <= 0.0f)
+                if (fProjVelocity >= 0.0f)
                 {
                     continue;
                 }
@@ -94,18 +93,17 @@ namespace Physics
             // separate
             if (listHits.Count > 0)
             {
-                Vector3 v3Separate = new Vector3();
-                foreach (Hit hit in listHits)
+                Hit hit = new Hit();
+                foreach (Hit hit2 in listHits)
                 {
-                    v3Separate += hit.m_v3Normal;
+                    if (hit2.m_fPenetration > hit.m_fPenetration)
+                    {
+                        hit = hit2;
+                    }
                 }
-                v3Separate.Normalize();
-                
-                for (int i = 0; i < 50; i++)
-                {
-                    rigidBody1.m_v3Position -= v3Separate * dt * 0.005f;
-                    rigidBody2.m_v3Position += v3Separate * dt * 0.005f;
-                }
+
+                rigidBody1.m_v3Position += hit.m_v3Normal * hit.m_fPenetration * 0.5f;
+                rigidBody2.m_v3Position -= hit.m_v3Normal * hit.m_fPenetration * 0.5f;
             }
         }
     }

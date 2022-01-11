@@ -11,6 +11,7 @@ namespace Physics
     public class Hit
     {
         public Vector3 m_v3PositionInWorld = new Vector3();
-        public Vector3 m_v3Normal   = new Vector3();   
+        public Vector3 m_v3Normal   = new Vector3();
+        public float m_fPenetration = 0.0f;
     }
 }
