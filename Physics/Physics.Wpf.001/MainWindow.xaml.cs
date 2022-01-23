@@ -56,8 +56,8 @@ namespace Physics.Wpf._001
             rigidBody = new RigidBody();
 
             rigidBody.m_fMass = 1.0f;
-            rigidBody.m_v3Position = new Vector3(0, 5.0f, 0);
-            rigidBody.m_fGravity = new Vector3(0, -1.0f, 0);
+            rigidBody.m_v3Position = new Vector3(0, 6.0f, 0);
+            rigidBody.m_fGravity = new Vector3(0, -9.81f, 0);
             rigidBody.m_fRestitution = 0.0f;
             rigidBody.m_fFriction = 1.0f;
             rigidBody.m_fLinearDamping = 0.5f;
@@ -122,7 +122,7 @@ namespace Physics.Wpf._001
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            float step = 1.0f / 100.0f; ;
+            float step = 1.0f / 500.0f; ;
             for (float i = 0; i < dt; i += step)
             {
                 rigidBody.Update(step);
