@@ -61,15 +61,16 @@ namespace Physics.Wpf._004
             loader = new OBJLoader();
             loader.LoadFromFile("", "henger.obj");
 
-            Vector3 v3Gravity = new Vector3(0, -9.0f, 0);
+            Vector3 v3Gravity = new Vector3(0, -1.0f, 0);
 
             rigidBody1.m_fMass = 1.0f;
             rigidBody1.m_v3Position = new Vector3(0f, 5.0f, 0);
             rigidBody1.m_fGravity = v3Gravity;
             rigidBody1.m_fRestitution = 0.0f;
+            rigidBody1.m_fFriction = 1.0f;
             rigidBody1.m_v3Rotate = new Vector3(ToRadian(0.0f), 0, ToRadian(60.0f));
-            rigidBody1.m_fLinearDamping = 0.5f;
-            rigidBody1.m_fAngularDamping = 0.5f;
+            rigidBody1.m_fLinearDamping = 0.1f;
+            rigidBody1.m_fAngularDamping = 0.1f;
 
             float scale = 0.1f;
             foreach (Vector3 v in loader.vertices) 
@@ -99,7 +100,8 @@ namespace Physics.Wpf._004
             rigidBody2.m_fMass = 1.0f;
             rigidBody2.m_v3Position = new Vector3(2f, 10.0f, 2);
             rigidBody2.m_fGravity = v3Gravity;
-            rigidBody2.m_fRestitution = 0.1f;
+            rigidBody2.m_fRestitution = 0.0f;
+            rigidBody2.m_fFriction = 1.0f;
             rigidBody2.m_v3Rotate = new Vector3(ToRadian(0.0f), 0, ToRadian(-15.0f));
             rigidBody2.m_fLinearDamping = 0.1f;
             rigidBody2.m_fAngularDamping = 0.1f;
@@ -151,7 +153,7 @@ namespace Physics.Wpf._004
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            float step = 1.0f / 60.0f;
+            float step = 1.0f / 100.0f;
             for (float i = 0; i < dt; i += step)
             {
                 rigidBody1.Update(step);

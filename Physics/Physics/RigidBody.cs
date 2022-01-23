@@ -36,6 +36,8 @@ namespace Physics
 
         public Matrix4 m_m4World = Matrix4.Identity;
 
+        public float m_fFriction = 1.0f;
+
         public float m_fLinearDamping = 1.0f;
         public float m_fAngularDamping = 1.0f;
 
