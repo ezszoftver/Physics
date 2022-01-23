@@ -103,7 +103,7 @@ namespace Physics.Wpf._002
             rigidBody2 = new RigidBody();
 
             rigidBody2.m_fMass = 1.0f;
-            rigidBody2.m_v3Position = new Vector3(3.0f, 8.0f, 0);
+            rigidBody2.m_v3Position = new Vector3(3.5f, 8.0f, 0);
             rigidBody2.m_fGravity = v3Gravity;
             rigidBody2.m_fRestitution = 0.0f;
             rigidBody2.m_fRestitution = 0.5f;

@@ -42,8 +42,15 @@ namespace Physics
                 Vector3 v3RelVelocity = rigidBody.GetPointVelocity(rA);
                 float fProjVelocity = Vector3.Dot(v3RelVelocity, hit.m_v3Normal);
 
-                Vector3 v3Tangent = v3RelVelocity - Vector3.Dot(rA, hit.m_v3Normal) * hit.m_v3Normal;
-                v3Tangent.Normalize();
+                Vector3 v3Tangent = v3RelVelocity - (Vector3.Dot(v3RelVelocity, hit.m_v3Normal) * hit.m_v3Normal);
+                if (v3Tangent.Length > 0.001f)
+                {
+                    v3Tangent.Normalize();
+                }
+                else 
+                {
+                    v3Tangent = new Vector3(0, 0, 0);
+                }
 
                 // calc impulse
                 float nominator = -Vector3.Dot(v3RelVelocity, v3Tangent);
@@ -72,7 +79,7 @@ namespace Physics
                     }
                 }
 
-                float separateVelocity = 0.05f;
+                float separateVelocity = 0.1f;
                 
                 rigidBody.m_v3Position += hit.m_v3Normal * Math.Max(0.0f, Vector3.Dot(-hit.m_v3Normal, rigidBody.m_fGravity.Normalized())) * dt * separateVelocity;
             }
@@ -120,8 +127,15 @@ namespace Physics
                 Vector3 v3RelVelocity = rigidBody1.GetPointVelocity(rA) - rigidBody2.GetPointVelocity(rB);
                 float fProjVelocity = Vector3.Dot(v3RelVelocity, hit.m_v3Normal);
 
-                Vector3 v3Tangent = v3RelVelocity - Vector3.Dot(rA, hit.m_v3Normal) * hit.m_v3Normal;
-                v3Tangent.Normalize();
+                Vector3 v3Tangent = v3RelVelocity - (Vector3.Dot(v3RelVelocity, hit.m_v3Normal) * hit.m_v3Normal);
+                if (v3Tangent.Length > 0.001f)
+                {
+                    v3Tangent.Normalize();
+                }
+                else
+                {
+                    v3Tangent = new Vector3(0, 0, 0);
+                }
 
                 // calc impulse
                 float nominator = -Vector3.Dot(v3RelVelocity, v3Tangent);
@@ -154,7 +168,7 @@ namespace Physics
                     }
                 }
 
-                float separateVelocity = 0.05f;
+                float separateVelocity = 0.1f;
 
                 rigidBody1.m_v3Position += hit.m_v3Normal * Math.Max(0.0f, Vector3.Dot(-hit.m_v3Normal, rigidBody1.m_fGravity.Normalized())) * dt * separateVelocity;
                 rigidBody2.m_v3Position += -hit.m_v3Normal * Math.Max(0.0f, Vector3.Dot(hit.m_v3Normal, rigidBody2.m_fGravity.Normalized())) * dt * separateVelocity;
