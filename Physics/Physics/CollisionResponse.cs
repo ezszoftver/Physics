@@ -21,10 +21,10 @@ namespace Physics
                 Vector3 v3RelVelocity = rigidBody.GetPointVelocity(rA);
                 float fProjVelocity = Vector3.Dot(v3RelVelocity, hit.m_v3Normal);
 
-                //if (fProjVelocity >= 0.0f) 
-                //{
-                //    continue;
-                //}
+                if (fProjVelocity >= 0.0f) 
+                {
+                    continue;
+                }
 
                 // calc impulse
                 float nominator = -(1.0f + rigidBody.m_fRestitution) * fProjVelocity;
@@ -49,10 +49,10 @@ namespace Physics
                 Vector3 v3RelVelocity = rigidBody.GetPointVelocity(rA);
                 float fProjVelocity = Vector3.Dot(v3RelVelocity, hit.m_v3Normal);
 
-                //if (fProjVelocity >= 0.0f)
-                //{
-                //    continue;
-                //}
+                if (fProjVelocity >= 0.0f)
+                {
+                    continue;
+                }
 
                 Vector3 v3Tangent = v3RelVelocity - (Vector3.Dot(v3RelVelocity, hit.m_v3Normal) * hit.m_v3Normal);
                 if (v3Tangent.Length > 0.001f)
@@ -93,7 +93,7 @@ namespace Physics
                     }
                 }
 
-                rigidBody.m_v3Position += hit.m_v3Normal * hit.m_fPenetration * 0.95f;
+                rigidBody.m_v3Position += hit.m_v3Normal * hit.m_fPenetration;
             }
         }
 

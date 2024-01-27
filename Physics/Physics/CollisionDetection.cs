@@ -12,7 +12,62 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static float margin = 0.0f;
+        public static float step = ((float)Math.PI * 2.0f) / 12.0f;
+        public static List<Plane> s_v3SATPlanes = new List<Plane>();
+
+        public static void GenerateSATPlanes()
+        {
+            s_v3SATPlanes.Clear();
+
+            for (float yaw = (float)(-Math.PI); yaw < (float)(Math.PI); yaw += step)
+            {
+                for (float pitch = (float)(-Math.PI / 2.0); pitch < (float)(Math.PI / 2.0); pitch += step)
+                {
+                    Matrix4 mat4Rot = Matrix4.CreateRotationY(yaw) * Matrix4.CreateRotationX(pitch);
+                    Vector3 v3Normal = Vector4.Transform(new Vector4(new Vector3(1.0f, 0.0f, 0.0f), 0), mat4Rot).Xyz;
+                    v3Normal.Normalize();
+
+                    Plane plane = new Plane(/*v3PointInWorld*/new Vector3(0.0f, 0.0f, 0.0f), v3Normal);
+
+                    s_v3SATPlanes.Add(plane);
+                }
+            }
+        }
+
+        public static void GenerateSAT(RigidBody rigidBody)
+        {           
+            rigidBody.m_dictMinMaxs.Clear();
+
+            for (int i = 0; i < s_v3SATPlanes.Count; i++) 
+            {
+                Plane plane = s_v3SATPlanes[i];
+
+                MinMax minmax;
+                minmax.m_fMin = float.MaxValue;
+                minmax.m_fMax = float.MinValue;
+                GetLocalMinMax(rigidBody, plane, ref minmax.m_fMin, ref minmax.m_fMax);
+
+                rigidBody.m_dictMinMaxs.Add(i, minmax);               
+            }
+        }
+
+        private static int GetIdFromPlane(RigidBody rigidBody, Plane plane) 
+        {
+            float fMaxDot = -1.0f;
+            int id = 0;
+
+            for (int i = 0; i < s_v3SATPlanes.Count; i++)
+            {
+                float fDot = Vector3.Dot(plane.m_v3Normal, s_v3SATPlanes[i].m_v3Normal);
+                if (fDot > fMaxDot) 
+                {
+                    id = i;
+                    fMaxDot = fDot;
+                }
+            }
+
+            return id;
+        }
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits2)
         {
@@ -25,7 +80,7 @@ namespace Physics
 
                 Vector3 v3PointInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody.m_m4World).Xyz;
                 float dist = plane.GetDistance(v3PointInWorld);
-                if (dist < margin)
+                if (dist < 0.0f)
                 {
                     Hit hit = new Hit();
                     hit.m_v3Normal = plane.m_v3Normal;
@@ -48,63 +103,95 @@ namespace Physics
         public static bool RigidBodyAndRigidBody(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits) 
         {
             // points in other body
-            GetPointsInConvexMesh(rigidBody1, rigidBody2, ref listHits);
+            listHits = new List<Hit>();
+
+            Plane separatePlane = null;
+            if (false == SAT(rigidBody1, rigidBody2, ref separatePlane))
+            {
+                return false;
+            }
+
+            ;
 
             return (listHits.Count() > 0);
         }
 
-        private static void GetPointsInConvexMesh(RigidBody rigidBody1, RigidBody rigidBody2, ref List<Hit> listHits2)
+        private static void GetLocalMinMax(RigidBody rigidBody, Plane plane, ref float fMin, ref float fMax)
         {
-            List<Hit> listHits = new List<Hit>();
+            fMin = float.MaxValue;
+            fMax = float.MinValue;
 
-            Matrix4 m4FinalTransform = Matrix4.Mult(rigidBody2.m_m4World, rigidBody1.m_m4World.Inverted());
-
-            Parallel.For(0, rigidBody2.m_listPoints2.Count, i =>
+            for (int i = 0; i < rigidBody.m_listIndices.Count; i++)
             {
-                Vector3 v3Point = rigidBody2.m_listPoints2[i];
-                Vector3 v3Normal = rigidBody2.m_listPointsNormals2[i];
-                Vector3 v3PointInLocal = Vector4.Transform(new Vector4(v3Point, 1), m4FinalTransform).Xyz;
+                Vector3 v3Point = rigidBody.m_listPoints[rigidBody.m_listIndices[i]];
 
-                bool bIsIn = true;
-                int nId = 0;
-                float dist2 = float.MaxValue;
-                for (int id2 = 0; id2 < rigidBody1.m_listIndices.Count; id2 += 3, nId++)
+                float t = plane.GetDistance(v3Point);
+
+                if (t < fMin) { fMin = t; }
+                if (fMax < t) { fMax = t; }
+            }
+        }
+
+        private static bool SAT(RigidBody rigidBody1, RigidBody rigidBody2, ref Plane bestPlane) 
+        {
+            float min_t = float.MaxValue;
+            bestPlane = null;
+
+            for (int i = 0; i < s_v3SATPlanes.Count; i++)
+            {
+                Plane planeWorld = s_v3SATPlanes[i];
+
+                // RigidBody1
+                float fMin1 = 0.0f;
+                float fMax1 = 0.0f;
                 {
-                    Vector3 v3AInLocal = rigidBody1.m_listPoints[rigidBody1.m_listIndices[id2 + 0]];
-                    Vector3 v3NLocal = rigidBody1.m_listTriangleNormals[nId];
-                
-                    Plane plane = new Plane(v3AInLocal + (v3NLocal * margin), v3NLocal);
-                    float dist = plane.GetDistance(v3PointInLocal);
+                    Vector3 v3NormalLocal = Vector4.Transform(new Vector4(planeWorld.m_v3Normal, 0), rigidBody1.m_m4World.Inverted()).Xyz;
+                    Plane planeLocal = new Plane(new Vector3(0.0f, 0.0f, 0.0f), v3NormalLocal);
 
-                    if (Math.Abs(dist) < dist2) 
-                    {
-                        dist2 = Math.Abs(dist);
-                    }
+                    int id = GetIdFromPlane(rigidBody1, planeLocal);
+                    MinMax localMinMax = rigidBody1.m_dictMinMaxs[id];
 
-                    if (dist > margin)
-                    {
-                        bIsIn = false;
-                        break;
-                    }
+                    float fCenter = planeWorld.GetDistance(rigidBody1.m_v3Position);
+                    fMin1 = fCenter + localMinMax.m_fMin;
+                    fMax1 = fCenter + localMinMax.m_fMax;
                 }
-                
-                if (true == bIsIn) 
+
+                // RigidBody2
+                float fMin2 = 0.0f;
+                float fMax2 = 0.0f;
                 {
-                    Hit hit = new Hit();
-                    
-                    hit.m_v3Normal = Vector4.Transform(new Vector4(-v3Normal, 0), rigidBody2.m_m4World).Xyz;
-                    hit.m_v3PositionInWorld = Vector4.Transform(new Vector4(v3Point, 1), rigidBody2.m_m4World).Xyz;
-                    hit.m_fPenetration = Math.Abs(dist2);
+                    Vector3 v3NormalLocal = Vector4.Transform(new Vector4(planeWorld.m_v3Normal, 0), rigidBody2.m_m4World.Inverted()).Xyz;
+                    Plane planeLocal = new Plane(new Vector3(0.0f, 0.0f, 0.0f), v3NormalLocal);
 
-                    lock (listHits) 
-                    {
-                        listHits.Add(hit);
-                    }
+                    int id = GetIdFromPlane(rigidBody2, planeLocal);
+                    MinMax localMinMax = rigidBody2.m_dictMinMaxs[id];
+
+                    float fCenter = planeWorld.GetDistance(rigidBody2.m_v3Position);
+                    fMin2 = fCenter + localMinMax.m_fMin;
+                    fMax2 = fCenter + localMinMax.m_fMax;
                 }
-            });
 
-            listHits2.Clear();
-            listHits2.AddRange(listHits);
+                float fFullMin = Math.Min(fMin1, fMin2);
+                float fFullMax = Math.Max(fMax1, fMax2);
+                float fFullDistance = fFullMax - fFullMin;
+
+                float fDistance1 = fMax1 - fMin1;
+                float fDistance2 = fMax2 - fMin2;
+
+                if (fFullDistance > (fDistance1 + fDistance2))
+                {
+                    return false;
+                }
+
+                float fPenetration = (fDistance1 + fDistance2) - fFullDistance;
+
+                if (fPenetration < min_t)
+                {
+                    bestPlane = planeWorld;
+                }
+            }
+
+            return true;
         }
 
         public static void DrawHits(List<Hit> listHits) 

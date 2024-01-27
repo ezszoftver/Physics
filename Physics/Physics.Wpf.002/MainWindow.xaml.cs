@@ -212,7 +212,7 @@ namespace Physics.Wpf._002
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref m_modelview);
 
-            float step = 1.0f / 500.0f;
+            float step = 1.0f / 50.0f;
             for (float i = 0; i < dt; i += step)
             {
                 rigidBody1.Update(step);

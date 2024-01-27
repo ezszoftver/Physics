@@ -9,6 +9,12 @@ using OpenTK;
 
 namespace Physics
 {
+    public struct MinMax 
+    {
+        public float m_fMin;
+        public float m_fMax;
+    }
+
     public class RigidBody
     {
         public static float step = 0.1f; // 0.5 meter
@@ -42,6 +48,9 @@ namespace Physics
         public float m_fAngularDamping = 1.0f;
 
         public float m_fDeltaTime = 0.0f;
+
+        public Dictionary<int, MinMax> m_dictMinMaxs = new Dictionary<int, MinMax>();
+        
 
         public static float ToRadian(float fDegree)
         {
@@ -116,57 +125,6 @@ namespace Physics
 
                 Vector3 v3Normal = m_listTriangleNormals[nIdN];
 
-                // belso terulet
-                for (float i = step; i < Vector3.Distance(v3B, v3A); i += step)
-                {
-                    float u = (float)i / Vector3.Distance(v3B, v3A);
-
-                    Vector3 v3Start = ((1.0f - u) * v3A) + (u * v3B);
-                    Vector3 v3End = ((1.0f - u) * v3A) + (u * v3C);
-
-                    
-                    for (float j = step; j < Vector3.Distance(v3End, v3Start); j += step) 
-                    {
-                        float v = (float)j / Vector3.Distance(v3End, v3Start);
-
-                        Vector3 v3Point = ((1.0f - v) * v3Start) + (v * v3End);
-
-                        m_listPoints2.Add(v3Point);
-                        m_listPointsNormals2.Add(v3Normal);
-                    }
-                }
-
-                // elek
-                for (float i = step; i < Vector3.Distance(v3B, v3A); i += step) 
-                {
-                    float u = (float)i / Vector3.Distance(v3B, v3A);
-
-                    Vector3 v3Point = ((1.0f - u) * v3A) + (u * v3B);
-
-                    m_listPoints2.Add(v3Point);
-                    m_listPointsNormals2.Add(v3Normal);
-                }
-
-                for (float i = step; i < Vector3.Distance(v3C, v3A); i += step)
-                {
-                    float u = (float)i / Vector3.Distance(v3C, v3A);
-
-                    Vector3 v3Point = ((1.0f - u) * v3A) + (u * v3C);
-
-                    m_listPoints2.Add(v3Point);
-                    m_listPointsNormals2.Add(v3Normal);
-                }
-
-                for (float i = step; i < Vector3.Distance(v3C, v3B); i += step)
-                {
-                    float u = (float)i / Vector3.Distance(v3C, v3B);
-
-                    Vector3 v3Point = ((1.0f - u) * v3B) + (u * v3C);
-
-                    m_listPoints2.Add(v3Point);
-                    m_listPointsNormals2.Add(v3Normal);
-                }
-
                 // csucsok
                 m_listPoints2.Add(v3A);
                 m_listPointsNormals2.Add(v3Normal);
@@ -176,25 +134,10 @@ namespace Physics
 
                 m_listPoints2.Add(v3C);
                 m_listPointsNormals2.Add(v3Normal);
-
-                //for (int i = 0; i <= step; i++)
-                //{
-                //    float u = (float)i / (float)step;
-                //
-                //    Vector3 v3Start = ((1.0f - u) * v3A) + (u * v3B);
-                //    Vector3 v3End = ((1.0f - u) * v3A) + (u * v3C);
-                //
-                //    for (int j = 0; j <= step; j++)
-                //    {
-                //        float v = (float)j / (float)step;
-                //
-                //        Vector3 v3Point = ((1.0f - v) * v3Start) + (v * v3End);
-                //
-                //        
-                //    }
-                //
-                //}
             }
+
+            if (0 == CollisionDetection.s_v3SATPlanes.Count) { CollisionDetection.GenerateSATPlanes(); }
+            CollisionDetection.GenerateSAT(this);
         }
 
         private void CalculateNormals() 
