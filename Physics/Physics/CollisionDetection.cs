@@ -76,7 +76,23 @@ namespace Physics
                 return false;
             }
 
-            ;
+
+
+            // Megkeresni a RigidBody1-ben a legjobb síkot.
+            // Hasonló síkok megkeresése
+
+            // Megkeresni a RigidBody2-ben a legjobb síkot.
+            // Hasonló síkok megkeresése
+
+            // RigidBody1 hasonló síkjainak, pontjainak megkeresése, amik benne vannak a RigidBody2-ben
+
+            // RigidBody2 hasonló síkjainak, pontjainak megkeresése, amik benne vannak a RigidBody1-ben
+
+            // RigidBody1 élek hol metszik a RigidBody2 háromszögeit
+
+            // RigidBody2 élek hol metszik a RigidBody1 háromszögeit
+
+            // Ugyan azon pontok törlése
 
             return (listHits.Count() > 0);
         }
@@ -102,9 +118,18 @@ namespace Physics
             float min_t = float.MaxValue;
             bestPlane = null;
 
+            Vector3 v3Dir1 = (rigidBody2.m_v3Position - rigidBody1.m_v3Position).Normalized();
+
             for (int i = 0; i < s_v3SATPlanes.Count; i++)
             {
                 Plane planeWorld = s_v3SATPlanes[i];
+
+                // hátsó lapok(síkok) eldobása
+                Vector3 v3Dir2 = planeWorld.m_v3Normal;
+                if (Vector3.Dot(v3Dir1, v3Dir2) < 0.0f) 
+                {
+                    continue;
+                }
 
                 // RigidBody1
                 float fMin1 = 0.0f;
