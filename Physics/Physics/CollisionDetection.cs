@@ -12,14 +12,14 @@ namespace Physics
 {
     public class CollisionDetection
     {
-        public static float step = ((float)Math.PI * 2.0f) / 12.0f;
+        public static float step = ((float)Math.PI * 2.0f) / 32.0f;
         public static List<Plane> s_v3SATPlanes = new List<Plane>();
 
         public static void GenerateSATPlanes()
         {
             s_v3SATPlanes.Clear();
 
-            for (float yaw = (float)(-Math.PI); yaw < (float)(Math.PI); yaw += step)
+            for (float yaw = 0.0f; yaw < (float)(Math.PI * 2.0); yaw += step)
             {
                 for (float pitch = (float)(-Math.PI / 2.0); pitch < (float)(Math.PI / 2.0); pitch += step)
                 {
@@ -32,41 +32,6 @@ namespace Physics
                     s_v3SATPlanes.Add(plane);
                 }
             }
-        }
-
-        public static void GenerateSAT(RigidBody rigidBody)
-        {           
-            rigidBody.m_dictMinMaxs.Clear();
-
-            for (int i = 0; i < s_v3SATPlanes.Count; i++) 
-            {
-                Plane plane = s_v3SATPlanes[i];
-
-                MinMax minmax;
-                minmax.m_fMin = float.MaxValue;
-                minmax.m_fMax = float.MinValue;
-                GetLocalMinMax(rigidBody, plane, ref minmax.m_fMin, ref minmax.m_fMax);
-
-                rigidBody.m_dictMinMaxs.Add(i, minmax);               
-            }
-        }
-
-        private static int GetIdFromPlane(RigidBody rigidBody, Plane plane) 
-        {
-            float fMaxDot = -1.0f;
-            int id = 0;
-
-            for (int i = 0; i < s_v3SATPlanes.Count; i++)
-            {
-                float fDot = Vector3.Dot(plane.m_v3Normal, s_v3SATPlanes[i].m_v3Normal);
-                if (fDot > fMaxDot) 
-                {
-                    id = i;
-                    fMaxDot = fDot;
-                }
-            }
-
-            return id;
         }
 
         public static bool RigidBodyAndPlane(RigidBody rigidBody, Plane plane, ref List<Hit> listHits2)
@@ -116,7 +81,7 @@ namespace Physics
             return (listHits.Count() > 0);
         }
 
-        private static void GetLocalMinMax(RigidBody rigidBody, Plane plane, ref float fMin, ref float fMax)
+        private static void GetLocalMinMax(RigidBody rigidBody, Plane plane, out float fMin, out float fMax)
         {
             fMin = float.MaxValue;
             fMax = float.MinValue;
@@ -148,8 +113,8 @@ namespace Physics
                     Vector3 v3NormalLocal = Vector4.Transform(new Vector4(planeWorld.m_v3Normal, 0), rigidBody1.m_m4World.Inverted()).Xyz;
                     Plane planeLocal = new Plane(new Vector3(0.0f, 0.0f, 0.0f), v3NormalLocal);
 
-                    int id = GetIdFromPlane(rigidBody1, planeLocal);
-                    MinMax localMinMax = rigidBody1.m_dictMinMaxs[id];
+                    MinMax localMinMax;
+                    GetLocalMinMax(rigidBody1, planeLocal, out localMinMax.m_fMin, out localMinMax.m_fMax);
 
                     float fCenter = planeWorld.GetDistance(rigidBody1.m_v3Position);
                     fMin1 = fCenter + localMinMax.m_fMin;
@@ -163,8 +128,8 @@ namespace Physics
                     Vector3 v3NormalLocal = Vector4.Transform(new Vector4(planeWorld.m_v3Normal, 0), rigidBody2.m_m4World.Inverted()).Xyz;
                     Plane planeLocal = new Plane(new Vector3(0.0f, 0.0f, 0.0f), v3NormalLocal);
 
-                    int id = GetIdFromPlane(rigidBody2, planeLocal);
-                    MinMax localMinMax = rigidBody2.m_dictMinMaxs[id];
+                    MinMax localMinMax;
+                    GetLocalMinMax(rigidBody2, planeLocal, out localMinMax.m_fMin, out localMinMax.m_fMax);
 
                     float fCenter = planeWorld.GetDistance(rigidBody2.m_v3Position);
                     fMin2 = fCenter + localMinMax.m_fMin;

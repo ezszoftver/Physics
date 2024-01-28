@@ -111,6 +111,8 @@ namespace Physics
 
         public void Create() 
         {
+            if (0 == CollisionDetection.s_v3SATPlanes.Count) { CollisionDetection.GenerateSATPlanes(); }
+
             CalculateNormals();
 
             m_listPoints2.Clear();
@@ -135,9 +137,6 @@ namespace Physics
                 m_listPoints2.Add(v3C);
                 m_listPointsNormals2.Add(v3Normal);
             }
-
-            if (0 == CollisionDetection.s_v3SATPlanes.Count) { CollisionDetection.GenerateSATPlanes(); }
-            CollisionDetection.GenerateSAT(this);
         }
 
         private void CalculateNormals() 
